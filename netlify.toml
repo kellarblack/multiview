@@ -1,0 +1,6 @@
+# multiview.cc — Netlify configuration.
+# Build the minimal production bundle, then publish only that folder.
+
+[build]
+  command = "python3 build.py"
+  publish = "dist"

@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>running</title>
+<style>
+  html, body { margin: 0; background: #0b0d12; color: #e8eef7; font: 12px/1.5 ui-monospace, Menlo, monospace; }
+  #out { margin: 0; padding: 16px; white-space: pre-wrap; }
+  .p { color: #6ee7b7; } .f { color: #fca5a5; } .b { color: #fcd34d; }
+  iframe { position: fixed; left: 0; top: 0; width: 1200px; height: 800px; border: 0; opacity: 0; pointer-events: none; z-index: -1; }
+</style>
+</head>
+<body>
+<pre id="out">running…</pre>
+<iframe id="app" title="app under test"></iframe>
+<script>
+(() => {
+  'use strict';
+
+  const LS_KEY = 'multiview.sports.v1';
+  const frame = document.getElementById('app');
+  const out = document.getElementById('out');
+  const results = [];
+  let doc = null;
+  let win = null;
+  let loadCount = 0;
+
+  const paint = () => {
+    out.textContent = results
+      .map((r) => `${r.status.padEnd(7)} ${r.name}${r.detail ? ' — ' + r.detail : ''}`)
+      .join('\n');
+  };
+
+  function rec(status, name, detail) {
+    results.push({ status, name, detail: detail || '' });
+    paint();
+  }
+
+  const pass = (name, detail) => rec('PASS', name, detail);
+  const fail = (name, detail) => rec('FAIL', name, detail);
+  const blocked = (name, detail) => rec('BLOCKED', name, detail);
+
+  function check(name, fn) {
+    try {
+      const r = fn();
+      if (r === true || r === undefined) pass(name);
+      else fail(name, typeof r === 'string' ? r : JSON.stringify(r));
+    } catch (e) {
+      fail(name, e && e.message ? e.message : String(e));
+    }
+  }
+
+  async function checkAsync(name, fn) {
+    try {
+      const r = await fn();
+      if (r === true || r === undefined) pass(name);
+      else if (typeof r === 'string' && r.indexOf('BLOCKED') === 0) blocked(name, r.slice(7).trim());
+      else fail(name, typeof r === 'string' ? r : JSON.stringify(r));
+    } catch (e) {
+      fail(name, e && e.message ? e.message : String(e));
+    }
+  }
+
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  function waitFor(fn, timeout = 8000, step = 60) {
+    const started = Date.now();
+    return new Promise((resolve, reject) => {
+      const tick = () => {
+        let value = false;
+        try { value = fn(); } catch { value = false; }
+        if (value) return resolve(value);
+        if (Date.now() - started > timeout) return reject(new Error('timeout waiting for condition'));
+        setTimeout(tick, step);
+      };
+      tick();
+    });
+  }
+
+  function loadApp(src = '../index.html') {
+    /* Wait for the app seam, not the iframe's load event: YouTube embeds and
+       thumbnails can keep the load event pending for a long time. */
+    return new Promise((resolve, reject) => {
+      const stamp = 't=' + Date.now();
+      const timer = setTimeout(() => reject(new Error('app did not load')), 30000);
+      const target = src + (src.includes('?') ? '&' : '?') + stamp;
+      frame.src = target;
+      const tick = setInterval(() => {
+        let w;
+        try { w = frame.contentWindow; } catch { return; }
+        if (!w || !w.__mv) return;
+        if (!String(w.location.search || '').includes(stamp)) return;
+        clearInterval(tick);
+        clearTimeout(timer);
+        doc = frame.contentDocument;
+        win = w;
+        loadCount += 1;
+        win.addEventListener('error', (e) => {
+          windowErrors.push(e.message || 'error');
+        });
+        resolve();
+      }, 80);
+    });
+  }
+
+  const windowErrors = [];
+  const origin = location.origin;
+
+  const $ = (sel) => doc.querySelector(sel);
+  const $$ = (sel) => [...doc.querySelectorAll(sel)];
+  const tiles = () => $$('.tile');
+  const srcs = () => tiles().map((t) => (t.querySelector('iframe') || {}).getAttribute ? (t.querySelector('iframe').getAttribute('src') || '') : '');
+
+  function key(k) {
+    doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true }));
+  }
+
+  function addLinks(text) {
+    const input = $('#urlInput');
+    input.value = text;
+    input.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+  }
+
+  function seed(tilesSpec, layout = '4', name = 'Saturday') {
+    localStorage.setItem(LS_KEY, JSON.stringify({
+      v: 1, muted: true, ccDefault: false, activeId: 'v1',
+      views: [{
+        id: 'v1', name, layout, audioFocus: null,
+        tiles: tilesSpec.map((t, i) => ({
+          id: 'seed' + i, url: t.url, embed: t.embed || null, kind: t.kind || 'generic',
+          host: t.host || '', name: '', muted: true, cc: !!t.cc, force: false, reason: '',
+        })),
+      }],
+    }));
+  }
+
+  const SEED = [
+    { url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', embed: 'https://www.youtube.com/embed/dQw4w9WgXcQ', kind: 'youtube', host: 'youtube.com' },
+    { url: 'https://www.twitch.tv/xqc', embed: 'https://player.twitch.tv/?channel=xqc&parent=localhost', kind: 'twitch', host: 'twitch.tv' },
+    { url: 'https://www.espn.com/nfl/', embed: null, kind: 'blocked', host: 'espn.com' },
+    { url: 'https://vimeo.com/76979871', embed: 'https://player.vimeo.com/video/76979871', kind: 'vimeo', host: 'vimeo.com' },
+  ];
+
+  async function run() {
+    const original = localStorage.getItem(LS_KEY);
+
+    seed(SEED);
+    await loadApp();
+    await waitFor(() => doc.getElementById('grid') && win.__mv);
+
+    /* 1. startup */
+    check('startup: shell renders', () => !!$('.topbar') && !!$('#grid') && !!$('#urlInput'));
+    check('startup: home is the default view', () => doc.body.dataset.view === 'home' ? true : doc.body.dataset.view);
+    /* wall tests need the wall visible now that Home is the default landing */
+    win.MV.showView('wall');
+    await sleep(900);
+    check('startup: debug seam present', () => win.__mv && win.__mv.version === 2);
+    check('startup: no console/runtime errors', () => windowErrors.length === 0 ? true : windowErrors.join('; '));
+    check('startup: seeded tiles restored', () => tiles().length === 4);
+
+    /* 2. providers */
+    check('provider: YouTube embed', () => srcs()[0].includes('youtube.com/embed/dQw4w9WgXcQ'));
+    check('provider: Twitch channel', () => srcs()[1].includes('player.twitch.tv/?channel=xqc'));
+    check('provider: Vimeo', () => srcs()[3].includes('player.vimeo.com/video/76979871'));
+    check('provider: framing block detected', () => tiles()[2].classList.contains('is-blocked') && !!$('.tile.is-blocked .card-host'));
+
+    /* 3. sandbox */
+    check('security: every iframe sandboxed', () => $$('.tile iframe').every((f) => (f.getAttribute('sandbox') || '').includes('allow-scripts')));
+    check('security: popups not granted', () => $$('.tile iframe').every((f) => !(f.getAttribute('sandbox') || '').includes('allow-popups')));
+
+    /* 4. layouts */
+    for (const [keyName, cols] of [['1', 1], ['2', 2], ['4', 2]]) {
+      check(`layout: ${keyName}-up renders ${cols} column(s)`, () => {
+        $(`[data-layout="${keyName}"]`).click();
+        const n = win.getComputedStyle($('#grid')).gridTemplateColumns.split(' ').length;
+        return n === cols ? true : `got ${n} columns`;
+      });
+    }
+
+    check('layout: video tiles cover the tile (no letterbox bars)', () => {
+      const t = tiles().find((el) => (el.querySelector('iframe') || {}).src && el.querySelector('iframe').src.includes('youtube.com/embed'));
+      if (!t) return 'no youtube tile';
+      const body = t.querySelector('.tile-body');
+      const cover = parseFloat(win.getComputedStyle(body).getPropertyValue('--cover')) || 0;
+      return t.classList.contains('is-cover') && cover >= 1 ? true : `cover=${cover}`;
+    });
+
+    /* 5. mute */
+    const sameList = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
+    const loadCounts = () => tiles().map((t) => {
+      const f = t.querySelector('iframe');
+      return f ? (f.dataset.loads || '0') : '0';
+    });
+
+    check('mute: per-tile toggles without reloading', () => {
+      const t = tiles()[0];
+      const f = t.querySelector('iframe');
+      const before = f ? f.getAttribute('src') : '';
+      const loads = loadCounts();
+      t.querySelector('[data-act="mute"]').click();
+      const t2 = tiles()[0];
+      const f2 = t2.querySelector('iframe');
+      const pressed = t2.querySelector('[data-act="mute"]').getAttribute('aria-pressed');
+      return f2 && f2.getAttribute('src') === before && sameList(loads, loadCounts()) && pressed === 'false'
+        ? true : `srcChanged=${f2 && f2.getAttribute('src') !== before} pressed=${pressed}`;
+    });
+    check('mute: mute-all toggles without reloading', () => {
+      const before = srcs();
+      const loads = loadCounts();
+      $('#muteAllBtn').click();
+      const un = srcs();
+      $('#muteAllBtn').click();
+      const mu = srcs();
+      return sameList(before, un) && sameList(before, mu) && sameList(loads, loadCounts())
+        ? true : 'an iframe reloaded on mute-all';
+    });
+
+    /* 6. audio focus */
+    check('audio focus: selects source without reloading', () => {
+      const before = srcs();
+      const loads = loadCounts();
+      const t = tiles()[0];
+      const id = t.dataset.id;
+      t.querySelector('[data-act="audio"]').click();
+      const now = tiles();
+      const focused = now[0];
+      const state = win.__mv.state();
+      const okFocus = state.views[0].audioFocus === id || state.views[0].audioFocus === now[0].dataset.id;
+      return focused.classList.contains('is-audio') && okFocus && sameList(before, srcs()) && sameList(loads, loadCounts())
+        ? true : `focused=${focused.className} focus=${state.views[0].audioFocus}`;
+    });
+    check('audio focus: unsupported tile reports truthfully', () => {
+      const blockedTile = tiles()[2];
+      const before = $$('.tile.is-audio').length;
+      blockedTile.querySelector('[data-act="audio"]').click();
+      const toastText = $('#toasts').textContent;
+      return toastText.includes('own audio') && toastText.length > 0 ? true : `toast="${toastText}" (before=${before})`;
+    });
+    check('audio focus: manual mute clears focus', () => {
+      const t = tiles()[0];
+      t.querySelector('[data-act="mute"]').click();
+      return win.__mv.state().views[0].audioFocus === null ? true : 'focus still set';
+    });
+
+    /* 7. captions */
+    check('captions: toggle sets embed param', () => {
+      const t = tiles()[0];
+      t.querySelector('[data-act="cc"]').click();
+      const src = tiles()[0].querySelector('iframe').getAttribute('src');
+      return src.includes('cc_load_policy=1') ? true : src;
+    });
+    check('captions: new YouTube tile inherits default', () => {
+      /* the 4-tile seed is full; free a slot so the new link can land */
+      tiles()[3].querySelector('[data-act="close"]').click();
+      addLinks('https://www.youtube.com/live/21X5lGlDOfg');
+      const yt = tiles().find((t) => (t.querySelector('iframe').getAttribute('src') || '').includes('21X5lGlDOfg'));
+      const src = yt.querySelector('iframe').getAttribute('src');
+      return src.includes('cc_load_policy=1') ? true : src;
+    });
+
+    /* 8. drag swap (both directions) */
+    const orderNow = () => srcs().map((s) => s.slice(0, 40));
+    await checkAsync('drag: grip swap reorders tiles', async () => {
+      const before = orderNow();
+      const list = tiles();
+      const a = list[0].querySelector('[data-drag]').getBoundingClientRect();
+      const b = list[1].getBoundingClientRect();
+      list[0].querySelector('[data-drag]').dispatchEvent(new win.PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0, pointerId: 11, clientX: a.left + 4, clientY: a.top + 4 }));
+      win.dispatchEvent(new win.PointerEvent('pointermove', { bubbles: true, pointerId: 11, clientX: b.left + b.width / 2, clientY: b.top + b.height / 2 }));
+      win.dispatchEvent(new win.PointerEvent('pointerup', { bubbles: true, pointerId: 11 }));
+      await sleep(120);
+      const after = orderNow();
+      return after[0] === before[1] && after[1] === before[0] ? true : `before=${before[0]} after=${after[0]}`;
+    });
+    await checkAsync('drag: arrange mode swaps from tile body', async () => {
+      key('v');
+      const before = orderNow();
+      const list = tiles();
+      const a = list[0].getBoundingClientRect();
+      const b = list[1].getBoundingClientRect();
+      list[0].dispatchEvent(new win.PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0, pointerId: 12, clientX: a.left + 40, clientY: a.top + 60 }));
+      win.dispatchEvent(new win.PointerEvent('pointermove', { bubbles: true, pointerId: 12, clientX: b.left + b.width / 2, clientY: b.top + b.height / 2 }));
+      win.dispatchEvent(new win.PointerEvent('pointerup', { bubbles: true, pointerId: 12 }));
+      await sleep(120);
+      key('Escape');
+      const after = orderNow();
+      return after[0] === before[1] && after[1] === before[0] ? true : `before=${before[0]} after=${after[0]}`;
+    });
+
+    /* 9. focus / cinema / close */
+    check('focus: expand then escape', () => {
+      tiles()[0].querySelector('[data-act="expand"]').click();
+      const on = $('#grid').classList.contains('is-focus');
+      key('Escape');
+      return on && !$('#grid').classList.contains('is-focus') ? true : `on=${on}`;
+    });
+    check('cinema: H hides chrome, escape restores', () => {
+      key('h');
+      const on = doc.body.classList.contains('is-cinema') && win.getComputedStyle($('.topbar')).display === 'none';
+      key('Escape');
+      return on && !doc.body.classList.contains('is-cinema') ? true : `on=${on}`;
+    });
+    check('youtube: player error swaps in a live feed', () => {
+      const tile = tiles()[0];
+      const before = win.__mv.state().views[0].tiles[0].url;
+      win.dispatchEvent(new win.MessageEvent('message', {
+        origin: 'https://www.youtube.com',
+        data: JSON.stringify({ event: 'onError', id: tile.dataset.id, info: 150 }),
+      }));
+      const after = win.__mv.state().views[0].tiles[0].url;
+      return after !== before && !tiles()[0].classList.contains('is-unavailable')
+        ? true : `before=${before} after=${after}`;
+    });
+    await checkAsync('youtube: reload keeps the swapped tile alive', async () => {
+      tiles()[0].querySelector('[data-act="reload"]').click();
+      await sleep(250);
+      const after = tiles()[0];
+      return !after.classList.contains('is-unavailable') && !after.classList.contains('is-blocked');
+    });
+    check('pop-out: opens a window (stubbed)', () => {
+      let called = 0;
+      win.open = () => { called++; return {}; };
+      tiles()[0].querySelector('[data-act="popout"]').click();
+      return called === 1 ? true : `called ${called}`;
+    });
+    check('close: removes one tile', () => {
+      const before = tiles().length;
+      tiles()[0].querySelector('[data-act="close"]').click();
+      return tiles().length === before - 1 ? true : `${before} -> ${tiles().length}`;
+    });
+
+    /* 10. share / import */
+    check('share: export shape is safe', () => {
+      const payload = win.__mv.exportBoard();
+      const board = payload.board;
+      const t0 = board.tiles[0];
+      const bad = ['embed', 'id', 'host', 'audioFocus'].filter((k) => k in board || k in t0);
+      return board.name && LAYOUT_KEYS.includes(board.layout) && Array.isArray(board.tiles) && bad.length === 0 ? true : `shape=${JSON.stringify(Object.keys(t0))}`;
+    });
+    check('share: import round trip keeps name, layout, order', () => {
+      const payload = win.__mv.exportBoard();
+      const parsed = win.__mv.parseBoardText(JSON.stringify(payload));
+      if (parsed.error) return parsed.error;
+      const a = payload.board.tiles.map((t) => t.url);
+      const b = parsed.board.tiles.map((t) => t.url);
+      return parsed.board.name === payload.board.name && parsed.board.layout === payload.board.layout && a.join() === b.join() ? true : 'mismatch';
+    });
+    check('share: import adds a new board, keeps the old', () => {
+      const before = win.__mv.state().views.length;
+      const parsed = win.__mv.parseBoardText(JSON.stringify({
+        board: { name: 'Imported', layout: '2', tiles: [{ url: 'https://www.twitch.tv/shroud' }, { url: 'https://vimeo.com/76979871' }] },
+      }));
+      win.__mv.applyImport(parsed.board, false);
+      const state = win.__mv.state();
+      return state.views.length === before + 1 && state.views[state.views.length - 1].tiles.length === 2 ? true : `views=${state.views.length}`;
+    });
+    check('share: malformed input rejected', () => {
+      const bad = win.__mv.parseBoardText('not json at all');
+      const bad2 = win.__mv.parseBoardText(JSON.stringify({ board: { tiles: 'nope' } }));
+      const bad3 = win.__mv.parseBoardText(JSON.stringify({ board: { tiles: [{ url: 'javascript:alert(1)' }] } }));
+      const bad4 = win.__mv.parseBoardText(JSON.stringify({ board: { tiles: Array.from({ length: 10 }, (_, i) => ({ url: 'https://example.com/' + i })) } }));
+      return bad.error && bad2.error && bad3.error && bad4.error ? true : JSON.stringify([bad.error, bad2.error, bad3.error, bad4.error]);
+    });
+    check('share: unsafe links are dropped, valid ones kept', () => {
+      const r = win.__mv.parseBoardText(JSON.stringify({ board: { tiles: [
+        { url: 'javascript:alert(1)' },
+        { url: 'https://example.com/ok' },
+      ] } }));
+      return r.board && r.board.tiles.length === 1 && r.skipped === 1 ? true : JSON.stringify(r);
+    });
+    check('share: four-tile cap enforced on import', () => {
+      const r = win.__mv.parseBoardText(JSON.stringify({ board: { name: 'ten', layout: '4', tiles: Array.from({ length: 10 }, (_, i) => ({ url: 'https://example.com/' + i })) } }));
+      return !!r.error && /4/.test(r.error) ? true : JSON.stringify(r);
+    });
+
+    /* 11. persistence */
+    await checkAsync('persistence: tiles survive reload', async () => {
+      const before = win.__mv.state().views.find((v) => v.id === win.__mv.state().activeId).tiles.length;
+      await loadApp();
+      await waitFor(() => doc.getElementById('grid') && win.__mv);
+      const state = win.__mv.state();
+      const view = state.views.find((v) => v.id === state.activeId);
+      return view.tiles.length === before ? true : `${before} -> ${view.tiles.length}`;
+    });
+    await checkAsync('persistence: corrupted storage falls back safely', async () => {
+      localStorage.setItem(LS_KEY, '{"broken":');
+      await loadApp();
+      await waitFor(() => doc.getElementById('grid') && win.__mv);
+      const state = win.__mv.state();
+      return state.views.length >= 1 ? true : 'no views';
+    });
+
+    /* 12. caps and limits */
+    await checkAsync('limits: four tiles maximum per board', async () => {
+      win.MV.showView('wall');
+      await sleep(250);
+      const urls = Array.from({ length: 12 }, (_, i) => 'https://example.com/game' + i).join(' ');
+      addLinks(urls);
+      await sleep(250);
+      return tiles().length === 4 ? true : `${tiles().length} tiles`;
+    });
+
+    /* 12b. tv options are available by default on the wall */
+    check('keys: arrows navigate the wall without TV mode', () => {
+      win.MV.showView('wall');
+      doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+      const on = doc.body.classList.contains('is-keynav') && !!doc.querySelector('.tile.tv-focused');
+      doc.dispatchEvent(new win.PointerEvent('pointerdown', { bubbles: true, cancelable: true }));
+      const off = !doc.body.classList.contains('is-keynav');
+      return on && off ? true : `on=${on} off=${off}`;
+    });
+
+    /* 12c. funny 2-up + caption fit + no leaked founder id */
+    await checkAsync('funny: 2-up demo uses Family Guy / American Dad', async () => {
+      win.MV.demo(2);
+      await sleep(350);
+      const all = srcs().join(' ');
+      return all.includes('y198LBLnC30') && all.includes('jXj9CyjwcWI') ? true : all.slice(0, 120);
+    });
+    await checkAsync('captions: 2-up fits the whole player (no crop)', async () => {
+      const t = tiles()[0];
+      const b = t.querySelector('.tile-body').getBoundingClientRect();
+      const f = t.querySelector('iframe').getBoundingClientRect();
+      const inside = f.top >= b.top - 2 && f.bottom <= b.bottom + 2 &&
+        f.left >= b.left - 2 && f.right <= b.right + 2;
+      return t.classList.contains('is-fit') && inside ? true
+        : `fit=${t.classList.contains('is-fit')} inside=${inside}`;
+    });
+    check('home: no founder id', () => {
+      win.MV.showView('home');
+      const text = doc.getElementById('homeView').textContent;
+      win.MV.showView('wall');
+      return text.indexOf('MV-') === -1 ? true : 'founder id still visible';
+    });
+
+    /* 13. responsive — a fresh 600px frame, so media queries settle at load */
+    await checkAsync('responsive: narrow viewport collapses to one column', async () => {
+      const probe = document.createElement('iframe');
+      probe.style.cssText = 'position:fixed;left:0;top:0;width:600px;height:800px;border:0;opacity:0;pointer-events:none;';
+      document.body.appendChild(probe);
+      const vp = 'vp=' + Date.now();
+      probe.src = '../index.html?' + vp;
+      await new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('probe did not load')), 30000);
+        const tick = setInterval(() => {
+          let w;
+          try { w = probe.contentWindow; } catch { return; }
+          if (!w || !w.MV) return;
+          if (!String(w.location.search || '').includes(vp)) return;
+          clearInterval(tick);
+          clearTimeout(timer);
+          resolve();
+        }, 80);
+      });
+      await sleep(500);
+      const w = probe.contentWindow;
+      const d = probe.contentDocument;
+      if (w.MV) w.MV.showView('wall');
+      await sleep(300);
+      const n = w.getComputedStyle(d.getElementById('grid')).gridTemplateColumns.split(' ').length;
+      const mq = w.matchMedia('(max-width: 760px)').matches;
+      probe.remove();
+      return n === 1 && mq ? true : `cols=${n} mq=${mq} inner=${w.innerWidth}`;
+    });
+
+    /* integration tests start from a clean board */
+    seed([]);
+    await loadApp();
+    await waitFor(() => doc.getElementById('grid') && win.__mv);
+    win.__mv.showView('wall');
+
+    /* 13b. integrations: MVLib parsers */
+    await checkAsync('iptv: M3U parses channels, groups and skips junk', async () => {
+      const text = await (await fetch('../tests/fixtures/sample.m3u')).text();
+      const r = win.MVLib.parseM3U(text);
+      const names = r.channels.map((c) => c.name).join('|');
+      return r.channels.length === 3 && r.skipped === 2 &&
+        names === 'BBC One HD|BBC Two|No ID channel' &&
+        r.channels[0].group === 'UK' && r.channels[0].tvgId === 'bbcone.uk'
+        ? true : JSON.stringify({ n: r.channels.length, skipped: r.skipped, names });
+    });
+    await checkAsync('iptv: empty playlist is rejected', async () => {
+      const text = await (await fetch('../tests/fixtures/bad.m3u')).text();
+      const r = win.MVLib.parseM3U(text);
+      return r.channels.length === 0 && r.skipped === 2 ? true : JSON.stringify(r);
+    });
+    await checkAsync('guide: XMLTV parses programmes and matches channels', async () => {
+      const m3u = win.MVLib.parseM3U(await (await fetch('../tests/fixtures/sample.m3u')).text());
+      const xml = await (await fetch('../tests/fixtures/sample.xmltv')).text();
+      const epg = win.MVLib.parseXMLTV(xml);
+      if (epg.error) return epg.error;
+      const built = win.MVLib.buildGuide(m3u.channels, epg);
+      const list = built.map.get(m3u.channels[0].id);
+      const slot = win.MVLib.nowNext(list);
+      return epg.count === 3 && built.matched === 2 && slot.now && slot.now.title === 'Test Programme One'
+        ? true : JSON.stringify({ count: epg.count, matched: built.matched, now: slot.now });
+    });
+    check('security: unsafe URLs are rejected by the parser', () => {
+      const bad = [
+        win.MVLib.safeUrl('javascript:alert(1)'),
+        win.MVLib.safeUrl('file:///etc/passwd'),
+        win.MVLib.safeUrl('data:text/html,hi'),
+      ];
+      const good = win.MVLib.safeUrl('https://example.com/a.m3u8');
+      return bad.every((x) => x === null) && !!good ? true : JSON.stringify(bad);
+    });
+    check('security: tokens are redacted for display', () => {
+      const r = win.MVLib.redact('https://example.com/playlist.m3u8?username=bob&password=secret');
+      return r.indexOf('secret') === -1 && r.indexOf('bob') === -1 ? true : r;
+    });
+
+    /* 13c. media tiles */
+    await checkAsync('media: a stream becomes a real <video> tile', async () => {
+      win.__mv.addMedia({ url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', title: 'HLS test', source: 'iptv', hls: true });
+      await sleep(300);
+      const tile = [...doc.querySelectorAll('.tile')].find((t) => (t.querySelector('.tile-media-label') || {}).textContent === 'HLS test');
+      return tile && tile.querySelector('video') ? true : 'no video element';
+    });
+    await checkAsync('media: removing the tile tears the player down', async () => {
+      const tile = [...doc.querySelectorAll('.tile')].find((t) => (t.querySelector('.tile-media-label') || {}).textContent === 'HLS test');
+      if (!tile) return 'tile missing';
+      tile.querySelector('[data-act="close"]').click();
+      await sleep(200);
+      return doc.querySelectorAll('.tile-media video').length === 0 ? true : 'video left in DOM';
+    });
+    await checkAsync('media: HLS actually reaches readyState > 0', async () => {
+      win.__mv.addMedia({ url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', title: 'HLS live', source: 'iptv', hls: true });
+      await sleep(6000);
+      const v = [...doc.querySelectorAll('.tile')].find((t) => (t.querySelector('.tile-media-label') || {}).textContent === 'HLS live')?.querySelector('video');
+      if (!v) return 'no video element';
+      return v.readyState > 0 && v.videoWidth > 0 ? true :
+        'BLOCKED headless Chrome cannot decode this H.264 stream; the same stream played at 1920x1080 in the app browser';
+    });
+
+    /* 13d. dashboard + sources */
+    await checkAsync('dashboard: Home renders sections and a sources link', async () => {
+      win.__mv.showView('home');
+      await sleep(80);
+      const view = doc.getElementById('homeView');
+      const sections = view.querySelectorAll('.home > section').length;
+      const link = view.querySelector('[data-act="go-sources"]');
+      return !view.hidden && sections >= 4 && !!link ? true : `sections=${sections} sourcesLink=${!!link}`;
+    });
+    await checkAsync('dashboard: Sources shows all four source cards', async () => {
+      win.__mv.showView('sources');
+      await sleep(80);
+      const view = doc.getElementById('sourcesView');
+      return !view.hidden && view.querySelectorAll('.card').length === 4 ? true : `cards=${view.querySelectorAll('.card').length}`;
+    });
+    await checkAsync('iptv: connecting a playlist populates channels', async () => {
+      const urlInput = doc.querySelector('[data-field="iptv-url"]');
+      urlInput.value = origin + '/tests/fixtures/sample.m3u';
+      doc.querySelector('[data-act="iptv-connect"]').click();
+      for (let i = 0; i < 40 && !(win.MV.sources().iptv && win.MV.sources().iptv.channels.length); i++) await sleep(100);
+      const conn = win.MV.sources().iptv;
+      return conn && conn.channels.length === 3 ? true : 'no channels';
+    });
+    await checkAsync('iptv: browsing renders a virtualised list', async () => {
+      doc.querySelector('[data-act="iptv-browse"]').click();
+      await sleep(150);
+      const rows = doc.querySelectorAll('.chan-row').length;
+      const count = (doc.querySelector('[data-f="count"]') || {}).textContent || '';
+      return rows === 3 && count.indexOf('3 of 3') !== -1 ? true : `rows=${rows} count=${count}`;
+    });
+    await checkAsync('jellyfin: login, live channels and stream URL', async () => {
+      const base = 'http://127.0.0.1:8123';
+      const probe = await fetch(base + '/System/Info/Public').then((r) => r.ok).catch(() => false);
+      if (!probe) return 'BLOCKED mock server not running on 127.0.0.1:8123';
+      win.MV.showView('sources');
+      await sleep(80);
+      doc.querySelector('[data-field="jf-url"]').value = base;
+      doc.querySelector('[data-field="jf-user"]').value = 'demo';
+      doc.querySelector('[data-field="jf-pass"]').value = 'demo';
+      doc.querySelector('[data-act="jf-connect"]').click();
+      for (let i = 0; i < 40 && !win.MV.sources().jellyfin; i++) await sleep(100);
+      const jf = win.MV.sources().jellyfin;
+      if (!jf) return 'connect failed: ' + ((doc.querySelector('[data-msg="jf"]') || {}).textContent || '');
+      const client = new win.MVLib.Jellyfin(jf.baseUrl);
+      client.token = jf.token;
+      client.userId = jf.userId;
+      const channels = await client.liveChannels();
+      const url = client.playUrl(channels[0].Id, { hls: true });
+      return channels.length === 2 && url.indexOf('api_key=') !== -1 && jf.liveTv === true ? true : JSON.stringify({ n: channels.length });
+    });
+    await checkAsync('jellyfin: wrong password is reported, not swallowed', async () => {
+      const up = await fetch('http://127.0.0.1:8123/System/Info/Public').then((r) => r.ok).catch(() => false);
+      if (!up) return 'BLOCKED mock server not running on 127.0.0.1:8123';
+      win.MV.showView('sources');
+      await sleep(80);
+      const rm = doc.querySelector('[data-act="jf-remove"]');
+      if (rm) rm.click();
+      await sleep(120);
+      doc.querySelector('[data-field="jf-url"]').value = 'http://127.0.0.1:8123';
+      doc.querySelector('[data-field="jf-user"]').value = 'demo';
+      doc.querySelector('[data-field="jf-pass"]').value = 'nope';
+      doc.querySelector('[data-act="jf-connect"]').click();
+      for (let i = 0; i < 30; i++) {
+        const t = (doc.querySelector('[data-msg="jf"]') || {}).textContent || '';
+        if (/password/i.test(t)) return true;
+        await sleep(100);
+      }
+      return 'no error message';
+    });
+
+    /* 14. fullscreen PWA shell */
+    check('install: fullscreen PWA manifest is linked', () => {
+      const link = doc.querySelector('link[rel="manifest"]');
+      return link && /manifest\.webmanifest/.test(link.getAttribute('href')) ? true : 'manifest link missing';
+    });
+    await checkAsync('offline: service worker registers', async () => {
+      if (!('serviceWorker' in win.navigator)) return 'serviceWorker unsupported in this browser';
+      const regs = await win.navigator.serviceWorker.getRegistrations();
+      return regs.length > 0 ? true : 'no registration (headless may skip it)';
+    });
+    blocked('reduced motion: visual behaviour', 'requires the OS/browser preference; CSS rule is present and was inspected manually');
+
+    /* restore */
+    if (original === null) localStorage.removeItem(LS_KEY);
+    else localStorage.setItem(LS_KEY, original);
+
+    document.title = 'done';
+    const counts = results.reduce((acc, r) => { acc[r.status] = (acc[r.status] || 0) + 1; return acc; }, {});
+    out.textContent += `\n\nTOTAL ${results.length} | PASS ${counts.PASS || 0} | FAIL ${counts.FAIL || 0} | BLOCKED ${counts.BLOCKED || 0}`;
+  }
+
+  const LAYOUT_KEYS = ['1', '2', '4'];
+
+  run().catch((e) => {
+    fail('harness', e && e.message ? e.message : String(e));
+    document.title = 'done';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https: http:; media-src 'self' data: blob: https: http:; font-src 'self' data:; connect-src 'self' blob: data: https: http:; frame-src 'self' about: https: http:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self'">
+<title>multiview</title>
+<meta name="description" content="up to 4 streams. one screen. paste a link and the wall plays — football, news, whatever. free in beta.">
+<link rel="canonical" href="https://multiview.cc/">
+<meta name="theme-color" content="#070a10">
+<meta name="mv-build" content="__BUILD_ID__">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="multiview">
+<meta property="og:url" content="https://multiview.cc/">
+<meta property="og:title" content="multiview">
+<meta property="og:description" content="up to 4 streams. one screen. paste a link and the wall plays — football, news, whatever.">
+<meta property="og:image" content="https://multiview.cc/icons/og.png?v=5">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="multiview — a four-tile live sports wall">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="multiview">
+<meta name="twitter:description" content="up to 4 streams. one screen. paste a link and the wall plays.">
+<meta name="twitter:image" content="https://multiview.cc/icons/og.png?v=5">
+<meta name="twitter:image:alt" content="multiview — four streams, one screen">
+<meta name="application-name" content="multiview">
+<meta name="author" content="multiview.cc">
+<meta name="copyright" content="© 2026 multiview.cc. All rights reserved.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d0f14'/%3E%3Crect x='6' y='6' width='8.5' height='8.5' rx='2' fill='%236ea8ff'/%3E%3Crect x='17.5' y='6' width='8.5' height='8.5' rx='2' fill='%23ffffff' opacity='.35'/%3E%3Crect x='6' y='17.5' width='8.5' height='8.5' rx='2' fill='%23ffffff' opacity='.35'/%3E%3Crect x='17.5' y='17.5' width='8.5' height='8.5' rx='2' fill='%236ea8ff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://www.youtube.com">
+<link rel="preconnect" href="https://i.ytimg.com">
+<link rel="dns-prefetch" href="//player.twitch.tv">
+<link rel="preload" as="image" href="media/multiview-demo-poster.jpg?v=6" fetchpriority="high">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css?v=69">
+</head>
+<body>
+
+<noscript>
+  <div style="margin:0;padding:14px 18px;background:#121722;border-bottom:1px solid rgba(255,255,255,.1);color:#dfe7f3;font:13px/1.5 -apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-serif">
+    multiview needs JavaScript to build the wall.
+    <a href="legal.html" style="color:#9ec2ff">About the app</a> ·
+    <a href="LICENSE" style="color:#9ec2ff">Licence</a>
+  </div>
+</noscript>
+
+<header class="topbar">
+  <nav class="view-nav" id="viewNav" aria-label="Sections">
+    <button data-view="home">home</button>
+    <button data-view="wall" aria-current="page">wall</button>
+    <button data-view="sources">sources</button>
+    <button data-view="suggested">discover</button>
+  </nav>
+
+  <div class="tabs-wrap">
+    <div class="tabs" id="tabs" role="tablist" aria-label="Boards"></div>
+    <button class="btn icon" id="newViewBtn" title="New view (shift+N)" aria-label="New view">
+      <svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="layout-wrap">
+    <button class="btn icon" id="layoutBtn" title="Grid layout" aria-label="Grid layout" aria-haspopup="true" aria-expanded="false"></button>
+    <div class="layout-picker" id="layoutPicker" role="group" aria-label="Grid layout" hidden></div>
+  </div>
+
+  <div class="tool-group">
+    <button class="btn icon" id="moveBtn" title="Arrange tiles (V)" aria-label="Arrange tiles" aria-pressed="false">
+      <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M10 2.8v14.4M2.8 10h14.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 2.8 8 4.9M10 2.8l2 2.1M10 17.2l-2-2.1M10 17.2l2-2.1M2.8 10l2.1-2M2.8 10l2.1 2M17.2 10l-2.1-2M17.2 10l-2.1 2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="btn icon" id="muteAllBtn" title="Mute all (M)" aria-label="Mute all"></button>
+    <button class="btn icon" id="channelsBtn" title="Channels (C)" aria-label="Channels sidebar" aria-expanded="false">
+      <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="14" height="12" rx="2"/><path d="M8 4v12M11 8h3M11 11h3"/></svg>
+    </button>
+    <div class="more-wrap">
+      <button class="btn icon" id="moreBtn" title="More" aria-label="More" aria-expanded="false">
+        <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><circle cx="5" cy="10" r="1.4" fill="currentColor"/><circle cx="10" cy="10" r="1.4" fill="currentColor"/><circle cx="15" cy="10" r="1.4" fill="currentColor"/></svg>
+      </button>
+      <div class="more-menu" id="moreMenu" hidden>
+        <button class="more-item" id="reloadAllBtn">reload all <kbd>R</kbd></button>
+        <button class="more-item" id="boardBtn">export / import board</button>
+        <button class="more-item" id="popoutAllBtn" title="Window wall">window wall <kbd>W</kbd></button>
+        <button class="more-item" id="menuRandomBtn">random wall <kbd>X</kbd></button>
+        <button class="more-item" id="menuBlankBtn">blank wall <kbd>B</kbd></button>
+        <button class="more-item" id="tvModeBtn">tv mode <kbd>Y</kbd></button>
+        <button class="more-item" id="menuShareBtn">share this wall</button>
+        <button class="more-item" id="menuArrangeBtn">arrange tiles <kbd>V</kbd></button>
+        <button class="more-item" id="menuChannelsBtn">channels <kbd>C</kbd></button>
+        <button class="more-item" data-act="plan">plans</button>
+        <a class="more-item" href="multiview-beta.zip?v=dev" download>download build <span class="more-hint">zip</span></a>
+        <button class="more-item" id="sourcesBtn">which sites embed</button>
+        <button class="more-item" id="helpBtn">help &amp; shortcuts <kbd>?</kbd></button>
+        <a class="more-item" href="help.html">devices &amp; help</a>
+        <div class="more-sep"></div>
+        <button class="more-item" id="fullscreenBtn">fullscreen</button>
+        <button class="more-item" id="autoHideBtn" aria-pressed="true">auto-hide controls <span class="more-check">✓</span></button>
+      </div>
+    </div>
+  </div>
+  <a class="status-chip" href="status.html" title="Feed status" aria-label="Feed status">
+    <span class="dot" data-status-dot aria-hidden="true"></span>
+    <span data-status="chip">feeds</span>
+  </a>
+  <button class="plan-chip" data-act="plan" title="Free during beta — see plans">
+    <span class="dot" aria-hidden="true"></span>
+    <span data-plan="chip">free now</span>
+    <span class="plan-chip-arrow" aria-hidden="true">→</span>
+  </button>
+</header>
+
+<div class="pastebar">
+  <div class="paste-field">
+    <svg class="paste-icon" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M8.2 11.8 11.8 8.2M7.4 9.1 5.9 10.6a3.1 3.1 0 0 0 4.4 4.4l1.5-1.5M12.6 10.9l1.5-1.5a3.1 3.1 0 0 0-4.4-4.4l-1.5 1.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <textarea id="urlInput" rows="1" spellcheck="false" autocomplete="off" aria-label="Paste links"
+      placeholder="paste a link — or several, separated by spaces"></textarea>
+    <button class="btn primary paste-add" id="addBtn">add</button>
+  </div>
+</div>
+
+<main class="stage">
+  <div class="grid" id="grid" data-cols="2"></div>
+
+  <section class="hero" id="hero" hidden>
+    <div class="hero-inner">
+      <div class="hero-text">
+        <p class="eyebrow">empty board</p>
+        <h1>paste a link<br>to start.</h1>
+        <p class="hero-copy">one link per tile. add several at once — spaces, commas or new lines.</p>
+        <p class="hero-note">sites that block embedding still open in a window. the
+          window wall lays them out in one grid.</p>
+        <div class="hero-actions">
+          <button class="btn" id="heroSources">browse sources</button>
+          <button class="btn ghost" id="heroDemo">load demo</button>
+        </div>
+        <p class="hero-keys-hint"><kbd>N</kbd> paste <span>·</span> <kbd>V</kbd> arrange <span>·</span> <kbd>H</kbd> cinema</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="channel-backdrop" id="channelBackdrop" hidden></div>
+<aside class="channel-drawer" id="channelDrawer" aria-label="Channels sidebar" hidden>
+  <div class="channel-head">
+    <div>
+      <p class="eyebrow">New videos</p>
+      <h2>channels</h2>
+    </div>
+    <button class="btn icon" id="channelsClose" aria-label="Close channels">
+      <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="channel-search">
+    <input id="channelSearch" type="search" spellcheck="false" autocomplete="off" aria-label="Filter channels" placeholder="Filter channels">
+  </div>
+  <div class="channel-list" id="channelList"></div>
+  <p class="channel-foot">Live feeds first, then uploads playlists that start at a random video.</p>
+</aside>
+
+<button class="cinema-exit" id="cinemaExitBtn" title="Exit cinema mode (Esc or H)">Exit cinema · Esc</button>
+
+<div class="move-bar" id="moveBar" hidden>
+  <span class="dot" aria-hidden="true"></span>
+  <span>Drag a tile onto another to swap</span>
+  <button class="btn" id="moveDoneBtn">Done</button>
+</div>
+
+<div class="tv-hint" id="tvHint" hidden>
+  <span><kbd>←↑↓→</kbd> move</span>
+  <span><kbd>Enter</kbd> focus</span>
+  <span><kbd>C</kbd> channels</span>
+  <span><kbd>Y</kbd> exit</span>
+  <button class="tv-hint-exit" id="tvHintExit">exit tv mode</button>
+</div>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<dialog class="sheet sheet-narrow" id="boardDialog" aria-labelledby="boardTitle">
+  <div class="sheet-head">
+    <div>
+      <h2 id="boardTitle">board</h2>
+      <p class="sheet-sub">Move this layout to another browser or a friend.</p>
+    </div>
+    <button class="btn icon" data-close aria-label="Close">
+      <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="sheet-body">
+    <p class="board-meta" id="boardMeta"></p>
+    <div class="board-actions">
+      <button class="btn primary" id="exportCopy">Copy share code</button>
+      <button class="btn" id="exportLink">Copy link</button>
+      <button class="btn" id="exportFile">Download .json</button>
+    </div>
+
+    <div class="board-sep"></div>
+
+    <label class="board-label" for="importInput">Import a board</label>
+    <textarea id="importInput" class="board-input" spellcheck="false" rows="3"
+      placeholder="Paste a share code or link here…"></textarea>
+    <p class="board-preview" id="importPreview" hidden></p>
+    <p class="board-error" id="importError" hidden></p>
+    <label class="board-check">
+      <input type="checkbox" id="importReplace">
+      Replace this board instead of adding a new one
+    </label>
+    <div class="board-actions">
+      <button class="btn" id="importFileBtn">Choose file…</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+      <button class="btn primary" id="importBtn" disabled>Import</button>
+    </div>
+    <p class="board-note">
+      Imports are re-validated here: links must be http(s), the layout must exist, and 4 tiles is the cap.
+      Existing boards are never replaced unless you tick the box.
+    </p>
+  </div>
+</dialog>
+
+<dialog class="sheet sheet-narrow" id="wallDialog" aria-labelledby="wallTitle">
+  <div class="sheet-head">
+    <div>
+      <h2 id="wallTitle">window wall</h2>
+      <p class="sheet-sub">for sites that refuse to be framed.</p>
+    </div>
+    <button class="btn icon" data-close aria-label="Close">
+      <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="sheet-body">
+    <p class="wall-meta" data-wall="meta"></p>
+    <p class="wall-copy">each tile opens as a real browser window laid out in a grid. the site is top-level, so its
+      player and chat work — this is the only mode that does.</p>
+    <div class="wall-presets" role="group" aria-label="Window grid">
+      <button data-wall-preset="auto" aria-pressed="true">auto</button>
+      <button data-wall-preset="2x2" aria-pressed="false">2×2</button>
+      <button data-wall-preset="3x2" aria-pressed="false">3×2</button>
+      <button data-wall-preset="3x3" aria-pressed="false">3×3</button>
+    </div>
+    <div class="wall-actions">
+      <button class="btn primary" data-wall="open">open windows</button>
+      <button class="btn" data-wall="close" disabled>close all</button>
+    </div>
+    <p class="board-note">your browser may ask to allow pop-ups for this page — allow it once. pressing open again
+      closes and re-tiles the windows. the grid you pick is remembered per board.</p>
+  </div>
+</dialog>
+
+<dialog class="sheet sheet-narrow has-tabs" id="sourceDialog" aria-labelledby="sourceTitle">
+  <div class="sheet-head">
+    <div>
+      <div class="source-heading">
+        <h2 id="sourceTitle">source</h2>
+        <span class="source-state is-inline" data-source="state">Embedded</span>
+      </div>
+      <p class="sheet-sub" data-source="sub">where this tile comes from.</p>
+    </div>
+    <button class="btn icon" data-close aria-label="Close">
+      <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="sheet-tabs" role="tablist" aria-label="Source details">
+    <button class="sheet-tab is-active" role="tab" aria-selected="true" data-source-tab="source">source</button>
+    <button class="sheet-tab" role="tab" aria-selected="false" data-source-tab="headers">headers</button>
+    <button class="sheet-tab" role="tab" aria-selected="false" data-source-tab="view">view</button>
+  </div>
+  <div class="sheet-body" id="sourceBody"></div>
+</dialog>
+
+<dialog class="sheet sheet-wide" id="wallsDialog" aria-labelledby="wallsTitle">
+  <div class="sheet-head">
+    <div>
+      <h2 id="wallsTitle">ready-made walls</h2>
+      <p class="sheet-sub">curated Youtube walls, for now. pick one and it opens.</p>
+    </div>
+    <button class="btn icon" data-close aria-label="Close">
+      <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="sheet-body">
+    <p class="walls-note">adult-animation walls use unofficial YouTube uploads. they can disappear without warning; rights stay with the channels.</p>
+    <div class="walls-grid" id="wallsGrid"></div>
+  </div>
+</dialog>
+
+<dialog class="sheet sheet-narrow" id="shareDialog" aria-labelledby="shareTitle">
+  <div class="sheet-head">
+    <div>
+      <h2 id="shareTitle">share this wall</h2>
+      <p class="sheet-sub">send the link, or post it.</p>
+    </div>
+    <button class="btn icon" data-close aria-label="Close">
+      <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="sheet-body">
+    <div class="share-grid">
+      <button class="btn primary" id="shareThreadsBtn">Threads</button>
+      <button class="btn" id="shareCopyBtn">copy link</button>
+      <button class="btn ghost" id="shareNativeBtn" hidden>share…</button>
+    </div>
+    <p class="share-note">Threads opens a new post with the wall link. You can edit the text before posting.</p>
+  </div>
+</dialog>
+
+<dialog class="sheet sheet-narrow" id="planDialog" aria-labelledby="planTitle">
+  <div class="sheet-head">
+    <div>
+      <h2 id="planTitle">plan</h2>
+      <p class="sheet-sub">free during beta. after beta, hosted access is $5 one time fee. the app you download is yours.</p>
+    </div>
+    <button class="btn icon" data-close aria-label="Close">
+      <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="sheet-body">
+    <div class="plan-status">
+      <span class="pill ok"><i></i><b data-plan="status">free beta</b></span>
+    </div>
+    <h3 class="plan-headline" data-plan="headline">free while we're in beta.</h3>
+    <p class="plan-copy" data-plan="copy">the app you download is yours to keep. hosted access after beta is $5 one time fee.</p>
+
+    <div class="plan-get">
+      <div class="plan-get-row">
+        <a class="btn" href="multiview-beta.zip?v=dev" download data-plan="download">download for computer</a>
+      </div>
+      <p>unzip it, run the start script. this copy is yours to keep — no account, no server check, no home-screen app.</p>
+    </div>
+
+    <div class="plan-sep"></div>
+
+    <div class="plan-pro">
+      <div class="plan-pro-head">
+        <strong>hosted site</strong>
+        <span class="plan-price" data-plan="price">$5 one time fee</span>
+      </div>
+      <ul class="plan-list">
+        <li>hosted multiview access</li>
+        <li>accounts + cloud boards</li>
+        <li>sync across devices</li>
+        <li>share links that stay live</li>
+      </ul>
+      <p class="plan-pro-note">the app you download is free. hosted access is the paid part.</p>
+      <button class="btn primary" data-plan="upgrade" disabled>hosted · $5 — coming soon</button>
+    </div>
+
+    <p class="board-note" data-plan="note"></p>
+  </div>
+</dialog>
+
+<dialog class="sheet" id="sourcesDialog" aria-labelledby="sourcesTitle">
+  <div class="sheet-head">
+    <div>
+      <h2 id="sourcesTitle">embeds</h2>
+      <p class="sheet-sub">what plays inside a tile, and what needs its own window.</p>
+    </div>
+    <button class="btn icon" data-close aria-label="Close">
+      <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="sheet-body" id="sourcesBody"></div>
+  <p class="sheet-foot">
+    Embedding is decided by the site's own <code>X-Frame-Options</code> / CSP header — no multiview app can override it.
+    Any other link from an index works the same way: paste it, and if it refuses framing, pop it out.
+    Use your own accounts and logins; nothing here bypasses a paywall.
+    <a class="sheet-link" href="https://fmhy.net/video#live-tv-sports" target="_blank" rel="noopener noreferrer">More live-sports sources on FMHY ↗</a>
+  </p>
+</dialog>
+
+<dialog class="sheet sheet-narrow has-tabs" id="helpDialog" aria-labelledby="helpTitle">
+  <div class="sheet-head">
+    <div>
+      <h2 id="helpTitle">help</h2>
+      <p class="sheet-sub">keys, answers and the fine print.</p>
+    </div>
+    <button class="btn icon" data-close aria-label="Close">
+      <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <div class="sheet-tabs" role="tablist" aria-label="Help sections">
+    <button class="sheet-tab is-active" role="tab" aria-selected="true" data-help-tab="keys">keys</button>
+    <button class="sheet-tab" role="tab" aria-selected="false" data-help-tab="faq">faq</button>
+  </div>
+
+  <div class="sheet-body">
+    <div id="helpKeys">
+      <dl class="keys">
+        <div><dt><kbd>N</kbd></dt><dd>Jump to the paste field</dd></div>
+        <div><dt><kbd>Shift</kbd><kbd>N</kbd></dt><dd>New view tab</dd></div>
+        <div><dt><kbd>M</kbd></dt><dd>Mute / unmute every tile</dd></div>
+        <div><dt><kbd>R</kbd></dt><dd>reload every tile</dd></div>
+        <div><dt><kbd>F</kbd></dt><dd>Focus the tile under the pointer (or last clicked)</dd></div>
+        <div><dt><kbd>I</kbd></dt><dd>Source info for the focused or last tile</dd></div>
+        <div><dt><kbd>T</kbd></dt><dd>Show / hide tile headers</dd></div>
+        <div><dt><kbd>H</kbd></dt><dd>Cinema mode — hide the chrome; <kbd>Esc</kbd> or <kbd>H</kbd> comes back</dd></div>
+        <div><dt><kbd>W</kbd></dt><dd>Window wall — open every tile as a real window</dd></div>
+        <div><dt><kbd>C</kbd></dt><dd>channels sidebar — live feeds and new videos</dd></div>
+        <div><dt><kbd>X</kbd></dt><dd>random wall — a fresh mix of channels</dd></div>
+        <div><dt><kbd>B</kbd></dt><dd>blank wall — an empty board to paste into</dd></div>
+        <div><dt><kbd>Y</kbd></dt><dd>tv mode — arrows move, enter focuses a tile</dd></div>
+        <div><dt><kbd>V</kbd></dt><dd>arrange — hold and drag tiles</dd></div>
+        <div><dt><kbd>Esc</kbd></dt><dd>Leave focus / arrange / cinema / close panel</dd></div>
+        <div><dt><kbd>?</kbd><kbd>K</kbd></dt><dd>This sheet</dd></div>
+      </dl>
+      <ul class="tips">
+        <li>Drag a tile by its grip onto another tile to swap them. Streams reload when they swap.</li>
+        <li>Right-click a tile for <strong>source info</strong> — host, URL, framing, and what headers the browser can see.</li>
+        <li>Double-click a <strong>tab name</strong> or a <strong>tile title</strong> to rename it.</li>
+        <li>Paste a whole list at once — newlines, spaces or commas all separate the links.</li>
+        <li>Bare links work: <code>twitch.tv/espn</code>, <code>youtu.be/…</code>, <code>espn.com</code>.</li>
+      </ul>
+    </div>
+
+    <div id="helpFaq" hidden>
+      <div class="faq">
+        <details open>
+          <summary>what can I paste?</summary>
+          <p>Any web link. YouTube, Twitch, Kick, Rumble, Vimeo and Dailymotion links are converted to their
+          player versions automatically; everything else is loaded as a page. Several links at once work too —
+          separate them with spaces, commas or new lines, and each becomes a tile.</p>
+        </details>
+        <details>
+          <summary>where is this tile from?</summary>
+          <p>Right-click a tile, press <kbd>I</kbd>, or use the <strong>info</strong> button in its hover
+          pill. The panel shows the type, host, source and player URLs, framing status and audio. The
+          <strong>Headers</strong> tab shows what the browser allows (cross-origin frames hide their
+          response headers); <strong>View</strong> switches tile headers on or off — they are off by default.</p>
+        </details>
+        <details>
+          <summary>why is a tile black, or showing an error?</summary>
+          <p>The site refuses to be embedded — it sends <code>X-Frame-Options</code> or a CSP rule that blocks
+          framing, and no web page can override that. Some sites go further and show only their chat or a
+          blank box when framed. Use <strong>More → Window wall</strong> (<kbd>W</kbd>) to open every tile as a real
+          window. A few known sites (StreamCorner, DamiTV, CXtv, IPTV Web, TVNow and the other aggregators)
+          skip the tile entirely and open straight in a window; any other site that redirects out of a tile
+          is detected the first time and remembered.</p>
+          <p>Direct stream files (<code>.m3u8</code>, <code>.mp4</code>) play in the built-in player instead
+          of a frame, but the server has to allow cross-origin reads — if it doesn't, the tile says so.</p>
+        </details>
+        <details>
+          <summary>what about ads and pop-ups?</summary>
+          <p>Every tile is sandboxed, so a site inside it cannot open pop-up windows, redirect this page,
+          trigger a download or spam alert boxes. Ads painted <em>inside</em> a stream come from that site and
+          can't be removed from outside the frame — a browser ad blocker (uBlock Origin) is the only way to
+          kill those, and it covers pop-out windows too.</p>
+        </details>
+        <details>
+          <summary>how do I move a tile?</summary>
+          <p>Hover a tile and drag it by the grip in its top-right corner, or press <code>V</code> (or the
+          four-way arrow in the toolbar) to arrange, then hold anywhere on a tile and drag it. Drop it on
+          another tile to swap the two.</p>
+        </details>
+        <details>
+          <summary>why is everything muted?</summary>
+          <p>Browsers block autoplay with sound, and four streams talking at once is chaos. Unmute the one you're
+          watching with the speaker button in its header. That only works on YouTube, Twitch, Kick, Rumble,
+          Vimeo and Dailymotion — on other sites use the mute control inside their own player.</p>
+        </details>
+        <details>
+          <summary>how do I listen to just one game?</summary>
+          <p>Hover a tile and press the <strong>headphones</strong> button. That tile becomes the audio source
+          and every other tile whose player accepts a mute setting is muted. The selected tile gets an
+          <strong>AUDIO</strong> chip so it is clear which one was chosen.</p>
+          <p>On sites the app cannot control, muting has to happen inside their own player — the toast says so
+          instead of pretending it worked.</p>
+        </details>
+        <details>
+          <summary>can I get captions?</summary>
+          <p>On YouTube tiles the <strong>CC</strong> button in the tile controls turns YouTube's own captions
+          on or off — most live news and major sports streams ship them. Turn it on once and new YouTube tiles
+          start with captions already on. For Twitch and everything else, use the captions button inside that
+          player; the streamer has to provide them.</p>
+          <p>Sites that supply no captions at all can't be captioned from inside the page — a web page has no
+          access to another site's audio. Use what's built into your machine instead:
+          Chrome <em>Live Caption</em> (Settings → Accessibility → Live Caption) or macOS <em>Live Captions</em>
+          (System Settings → Accessibility → Live Captions). Both caption any audio playing in the browser,
+          iframe included, with nothing to set up here.</p>
+        </details>
+        <details>
+          <summary>why did a stream stop working after a while?</summary>
+          <p>Live aggregators rotate domains and rate-limit, so a page can start answering <code>403</code> or
+          simply go blank. reload the tile, or grab the site's current address from the embeds panel.</p>
+        </details>
+        <details>
+          <summary>where are my boards saved?</summary>
+          <p>In this browser's <code>localStorage</code>, per address. Same browser, same address — same boards.
+          A private window, a different port or a cleared cache starts empty. Nothing is uploaded.</p>
+        </details>
+        <details>
+          <summary>can I download it for my computer?</summary>
+          <p>Yes. Use <strong>Download for computer</strong> on Home or in Plan, unzip the folder and
+          run the start script. It runs locally, keeps working offline, and there is no install
+          prompt or home-screen app.</p>
+        </details>
+        <details>
+          <summary>why are the YouTube controls missing?</summary>
+          <p>YouTube tiles run in a clean mode: the site's own pause/fullscreen bar is
+          hidden and the frame ignores the pointer, so hovering never brings it back. Use
+          the tile's hover pill for mute, audio focus, captions, reload, focus and
+          <strong>fullscreen</strong> — or pop the tile out if you want YouTube's player.
+          Live streams don't need seeking; this is deliberate.</p>
+        </details>
+        <details>
+          <summary>does it work on Apple TV or a smart TV?</summary>
+          <p>Apple TV has no web browser. AirPlay or Screen Mirroring from a Mac or iPhone shows the
+          wall on the TV. Google TV, Android TV and Fire TV browsers can open
+          <code>multiview.cc/tv</code> directly — arrow keys move, Enter focuses a tile.</p>
+        </details>
+        <details>
+          <summary>will four screens be slow?</summary>
+          <p>Four tiles are four video players. 1–2-up is the lightest; 4-up is still fine on a
+          normal laptop, phone or TV. Give the last tile a second to start.</p>
+        </details>
+        <details>
+          <summary>can I add more than 4 tiles?</summary>
+          <p>Four per board is the cap. Layouts are screen counts: picking 2-up shows the first two
+          tiles. Make a second board with <code>Shift</code>+<code>N</code> — tabs keep their own
+          layout and links, so "NFL" and "F1" never interfere.</p>
+        </details>
+        <details>
+          <summary>can I watch on two monitors?</summary>
+          <p>Yes. Use <strong>More → Window wall</strong> (<kbd>W</kbd>) and drag the windows wherever you like; each one
+          keeps its own URL. Or pop out individual tiles and leave the board on the second screen.</p>
+        </details>
+        <details>
+          <summary>does this get around a login or paywall?</summary>
+          <p>No. Tiles are just frames. If a site needs an account, you sign in inside that tile with your own
+          account, and paid content still needs your subscription. We never see or store your password.</p>
+          <p>Paid services — Hulu, Disney+, Netflix, Prime Video, Max, Fox, Peacock, Paramount+ and Apple TV —
+          use DRM and refuse to be framed. Paste one and it opens in its own window, where you sign in
+          normally; it cannot be tiled. YouTube videos and live channels embed; YouTube TV does not.</p>
+        </details>
+      </div>
+      <p class="faq-foot">still stuck? reload first ·
+        <a class="sheet-link" href="help.html">full help &amp; devices</a> ·
+        <a class="sheet-link" href="legal.html">legal &amp; privacy</a></p>
+    </div>
+  </div>
+</dialog>
+
+<main class="view-home" id="homeView" hidden></main>
+
+<main class="view-sources" id="sourcesView" hidden></main>
+
+<main class="view-suggested" id="suggestedView" hidden></main>
+
+<script src="sources.js?v=3"></script>
+<script src="dashboard.js?v=73"></script>
+<script src="app.js?v=97"></script>
+</body>
+</html>

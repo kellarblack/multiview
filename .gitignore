@@ -1,0 +1,17 @@
+.DS_Store
+server/data/
+server/*.db
+server/data/*.db
+__pycache__/
+*.pyc
+.env
+server/.env
+server/.env.*
+!server/.env.example
+dist/
+multiview-beta.zip
+multiview-site.zip
+
+# generated
+product-video/frames/
+product-video/encode

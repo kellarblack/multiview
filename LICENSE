@@ -1,0 +1,30 @@
+Copyright (c) 2026 multiview.cc. All rights reserved.
+
+This software, including its source code, interface design, layout, copy, icons and
+build output (the "Software"), is proprietary and confidential.
+
+No permission is granted to copy, reproduce, mirror, scrape, publish, distribute,
+sublicense, sell, modify, or create derivative works from the Software, in whole or
+in part, by any means, without prior written permission from the copyright holder.
+
+You may view the Software in a browser and use it for its intended purpose. Loading
+the page necessarily downloads the client files; that does not grant any licence to
+reuse them.
+
+"multiview.cc", the wordmark and the tile mark are unregistered trademarks of the
+copyright holder. Do not use them in a way that suggests affiliation or endorsement.
+
+Third-party components keep their own licences:
+
+- hls.js — Apache License 2.0, Copyright (c) 2017-present Video Dev Ltd and
+  contributors. See vendor/NOTICE.md.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+The Software is a viewer for links supplied by the user. It does not host, store or
+transmit third-party video content.

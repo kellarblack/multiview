@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#070a10">
+<title>multiview help</title>
+<meta name="description" content="how to use multiview.cc on iphone, ipad, mac, android, google tv and apple tv. short answers for layouts, sound, blocked feeds, downloads and privacy.">
+<link rel="canonical" href="https://multiview.cc/help">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="multiview">
+<meta property="og:title" content="multiview help">
+<meta property="og:description" content="device setup and short answers for the wall. no account, no install.">
+<meta property="og:image" content="https://multiview.cc/icons/og.png?v=4">
+<meta property="og:url" content="https://multiview.cc/help">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d0f14'/%3E%3Crect x='6' y='6' width='8.5' height='8.5' rx='2' fill='%236ea8ff'/%3E%3Crect x='17.5' y='6' width='8.5' height='8.5' rx='2' fill='%23ffffff' opacity='.35'/%3E%3Crect x='6' y='17.5' width='8.5' height='8.5' rx='2' fill='%23ffffff' opacity='.35'/%3E%3Crect x='17.5' y='17.5' width='8.5' height='8.5' rx='2' fill='%236ea8ff'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #070a10;
+    --panel: #0b0e15;
+    --line: rgba(255,255,255,.09);
+    --line-hi: rgba(255,255,255,.16);
+    --text: #eef3fb;
+    --muted: #b3bdcc;
+    --dim: #808b9d;
+    --accent: #8fb8ff;
+    --accent-2: #6ea8ff;
+    --ok: #47d39a;
+    --live: #ff5f66;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Inter, system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+    --ease: cubic-bezier(.22,.61,.36,1);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(900px 480px at 12% -14%, rgba(62,112,210,.22), transparent 64%),
+      radial-gradient(700px 400px at 92% -8%, rgba(48,150,190,.10), transparent 66%),
+      var(--bg);
+    color: var(--text);
+    font: 16px/1.7 var(--font);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection { background: rgba(110,168,255,.3); }
+  a { color: #b9d3fb; text-underline-offset: 3px; }
+  a:hover { color: #fff; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+  .skip {
+    position: absolute; left: -999px; top: 8px; z-index: 99;
+    padding: 8px 12px; border-radius: 8px; background: var(--accent); color: #06121f; font-weight: 650;
+  }
+  .skip:focus { left: 12px; }
+
+  header {
+    position: sticky; top: 0; z-index: 20;
+    border-bottom: 1px solid var(--line);
+    background: rgba(7,10,16,.82);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+  .bar {
+    max-width: 980px; margin: 0 auto; padding: 0 22px;
+    height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .brand {
+    display: inline-flex; align-items: center; gap: 9px;
+    color: #cfe2ff; font-size: 14px; font-weight: 650; letter-spacing: .06em;
+  }
+  .mark { width: 18px; height: 18px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; }
+  .mark i { display: block; border-radius: 2px; background: var(--accent); }
+  .mark i:nth-child(2), .mark i:nth-child(3) { background: rgba(255,255,255,.28); }
+  nav { display: flex; align-items: center; gap: 4px; }
+  nav a {
+    display: inline-flex; align-items: center; height: 30px; padding: 0 11px;
+    border-radius: 7px; color: var(--muted); font-size: 13px; font-weight: 560; text-decoration: none;
+    transition: background .15s var(--ease), color .15s var(--ease);
+  }
+  nav a:hover { background: rgba(255,255,255,.05); color: #fff; }
+  nav a[aria-current="page"] { background: rgba(110,168,255,.14); color: #dce9ff; box-shadow: inset 0 0 0 1px rgba(110,168,255,.34); }
+
+  main { max-width: 980px; margin: 0 auto; padding: 46px 22px 88px; }
+  .hero { max-width: 760px; }
+  .eyebrow { margin: 0 0 14px; font-size: 12px; font-weight: 650; letter-spacing: .08em; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(36px, 6vw, 62px); line-height: 1.02; letter-spacing: -.045em; font-weight: 750; }
+  h1 .blue { color: var(--accent); }
+  .lede { margin: 20px 0 0; max-width: 62ch; color: var(--muted); font-size: 17px; line-height: 1.65; }
+  .quick {
+    display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 0;
+  }
+  .quick a {
+    display: inline-flex; align-items: center; gap: 7px;
+    height: 36px; padding: 0 14px; border-radius: 9px;
+    border: 1px solid var(--line-hi); background: rgba(255,255,255,.035);
+    color: #dbe6f5; font-size: 13.5px; font-weight: 600; text-decoration: none;
+    transition: background .15s var(--ease), border-color .15s var(--ease), transform .12s var(--ease);
+  }
+  .quick a:hover { background: rgba(255,255,255,.07); border-color: var(--line-hi); color: #fff; }
+  .quick a:active { transform: translateY(1px); }
+  .quick a.primary { background: linear-gradient(180deg, #a9c9ff, #6ea8ff); border-color: rgba(169,201,255,.7); color: #06121f; }
+  .quick a.primary:hover { color: #06121f; filter: brightness(1.04); }
+
+  .device-chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 28px 0 0; }
+  .device-chips span {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 29px; padding: 0 10px; border: 1px solid var(--line); border-radius: 999px;
+    background: rgba(255,255,255,.03); color: #c5d0df; font-size: 12.5px; font-weight: 560;
+  }
+  .device-chips i { width: 5px; height: 5px; border-radius: 50%; background: var(--ok); }
+
+  section { margin-top: 54px; scroll-margin-top: 74px; }
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; }
+  h2 { margin: 0; font-size: 28px; line-height: 1.15; letter-spacing: -.03em; font-weight: 680; }
+  .sec-head p { margin: 0; color: var(--dim); font-size: 13px; }
+  h3 { margin: 0 0 8px; font-size: 18px; letter-spacing: -.015em; font-weight: 650; }
+  p { margin: 0 0 12px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 13.5px; line-height: 1.6; color: var(--dim); }
+
+  .toc {
+    display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px;
+    margin-top: 18px;
+  }
+  .toc a {
+    display: block; padding: 11px 13px; border: 1px solid var(--line); border-radius: 9px;
+    background: rgba(255,255,255,.025); color: #cfd9e7; font-size: 13.5px; text-decoration: none;
+    transition: background .15s var(--ease), border-color .15s var(--ease);
+  }
+  .toc a:hover { background: rgba(110,168,255,.08); border-color: rgba(110,168,255,.28); color: #fff; }
+  .toc b { display: block; color: #eef3fb; font-size: 14px; font-weight: 620; margin-bottom: 1px; }
+  .toc span { color: var(--dim); font-size: 12px; }
+
+  .devices { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+  .device {
+    padding: 18px 18px 16px; border: 1px solid var(--line); border-radius: 13px;
+    background: linear-gradient(180deg, rgba(255,255,255,.032), rgba(255,255,255,.012));
+  }
+  .device-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .device h3 { margin: 0; }
+  .status {
+    flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px;
+    height: 22px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 620;
+    color: #bfe9d6; border: 1px solid rgba(71,211,154,.24); background: rgba(71,211,154,.08);
+  }
+  .status i { width: 5px; height: 5px; border-radius: 50%; background: var(--ok); }
+  .status.air { color: #dce9ff; border-color: rgba(110,168,255,.28); background: rgba(110,168,255,.1); }
+  .status.air i { background: var(--accent); }
+  .device ol { margin: 8px 0 0; padding-left: 19px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+  .device li + li { margin-top: 4px; }
+  .device .note { margin: 10px 0 0; color: var(--dim); font-size: 12.5px; line-height: 1.55; }
+  .device a { font-size: 13.5px; }
+
+  .faq { display: grid; gap: 6px; }
+  details {
+    border: 1px solid var(--line); border-radius: 11px;
+    background: rgba(255,255,255,.022);
+    transition: background .16s var(--ease), border-color .16s var(--ease);
+  }
+  details[open] { background: rgba(255,255,255,.04); border-color: var(--line-hi); }
+  summary {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    padding: 14px 16px; border-radius: 11px; cursor: pointer; list-style: none;
+    font-size: 15px; font-weight: 590; color: #e8eef8;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary:hover { color: #fff; }
+  summary::after {
+    content: ""; flex: 0 0 auto; width: 7px; height: 7px; margin-right: 2px;
+    border-right: 1.6px solid var(--dim); border-bottom: 1.6px solid var(--dim);
+    transform: rotate(45deg); transition: transform .2s var(--ease), border-color .15s;
+  }
+  details[open] summary::after { transform: rotate(-135deg); border-color: var(--accent); }
+  .answer { padding: 0 16px 15px; color: var(--muted); font-size: 14.5px; line-height: 1.7; }
+  .answer p:last-child { margin-bottom: 0; }
+  .answer code { font-family: var(--mono); font-size: 12.5px; color: #cfe2ff; background: rgba(110,168,255,.1); border-radius: 4px; padding: 1px 4px; }
+
+  .stuck {
+    margin-top: 42px; padding: 20px 22px; border: 1px solid rgba(110,168,255,.3); border-radius: 14px;
+    background:
+      radial-gradient(100% 160% at 0% 0%, rgba(110,168,255,.13), transparent 60%),
+      rgba(255,255,255,.025);
+  }
+  .stuck h2 { font-size: 23px; }
+  .stuck p { margin: 7px 0 0; color: var(--muted); font-size: 14.5px; }
+  .stuck .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .stuck a {
+    display: inline-flex; align-items: center; height: 34px; padding: 0 12px;
+    border: 1px solid var(--line-hi); border-radius: 8px; background: rgba(255,255,255,.04);
+    color: #dbe6f5; font-size: 13px; font-weight: 600; text-decoration: none;
+  }
+  .stuck a:hover { background: rgba(255,255,255,.08); color: #fff; }
+
+.repo-soon { color: var(--dim); white-space: nowrap; }
+
+  footer {
+    border-top: 1px solid var(--line); margin-top: 64px; padding: 24px 0 0;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+    color: var(--dim); font-size: 12.5px;
+  }
+  footer a { color: #a9c7f5; text-decoration: none; }
+  footer a:hover { color: #fff; text-decoration: underline; }
+
+  .pricing {
+    display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin-top: 18px;
+  }
+  .pricing div {
+    padding: 14px 16px; border: 1px solid var(--line); border-radius: 11px;
+    background: rgba(255,255,255,.025);
+  }
+  .pricing b { display: block; color: #f1f5fb; font-size: 16px; font-weight: 650; letter-spacing: -.01em; }
+  .pricing span { display: block; margin-top: 3px; color: var(--dim); font-size: 13px; line-height: 1.5; }
+  .pricing .yours { border-color: rgba(71,211,154,.24); background: rgba(71,211,154,.045); }
+  .pricing .yours b { color: #c8f5e2; }
+
+  @media (max-width: 760px) {
+    .bar { height: auto; padding: 10px 16px; flex-wrap: wrap; }
+    nav { width: 100%; overflow-x: auto; }
+    nav a { flex: 0 0 auto; }
+    main { padding: 34px 18px 70px; }
+    .devices, .toc, .pricing { grid-template-columns: 1fr; }
+    h2 { font-size: 25px; }
+    .device { padding: 16px 15px 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">skip to content</a>
+
+<header>
+  <div class="bar">
+    <a class="brand" href="/" aria-label="multiview.cc home">
+      <span class="mark"><i></i><i></i><i></i><i></i></span> multiview
+    </a>
+    <nav aria-label="Sections">
+      <a href="/">home</a>
+      <a href="/tv">tv</a>
+      <a href="/help" aria-current="page">help</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <div class="hero">
+    <p class="eyebrow">help &amp; devices</p>
+    <h1>get a wall running on <span class="blue">anything you own.</span></h1>
+    <p class="lede">the short answers and the device steps. no account, no install. open the site in a browser, or send it to your tv with airplay.</p>
+    <div class="quick">
+      <a class="primary" href="/">open the wall <span aria-hidden="true">→</span></a>
+      <a href="/tv">tv mode</a>
+      <a href="#tuners">tuners &amp; plex</a>
+      <a href="/multiview-beta.zip?v=dev" download>download for computer</a>
+      <a href="/legal.html">legal &amp; privacy</a> · <a href="/status.html">status</a>
+    </div>
+    <div class="device-chips" aria-label="Supported devices">
+      <span><i></i>iphone</span><span><i></i>ipad</span><span><i></i>mac</span>
+      <span><i></i>android</span><span><i></i>google tv</span><span><i></i>apple tv · airplay</span>
+      <span><i></i>windows</span><span><i></i>linux</span>
+    </div>
+    <div class="pricing" aria-label="Pricing">
+      <div><b>free now</b><span>beta, no account, no card</span></div>
+      <div><b>$5 one time fee</b><span>hosted site after beta</span></div>
+      <div class="yours"><b>yours</b><span>the downloaded app, free to keep</span></div>
+    </div>
+  </div>
+
+  <section id="devices">
+    <div class="sec-head">
+      <h2>devices</h2>
+      <p>pick yours. all of these use the same site.</p>
+    </div>
+    <div class="devices">
+      <article class="device">
+        <div class="device-head"><h3>iphone &amp; ipad</h3><span class="status"><i></i>browser</span></div>
+        <ol>
+          <li>open <a href="https://multiview.cc/">multiview.cc</a> in safari or chrome.</li>
+          <li>paste a link, pick a layout, tap a tile to focus it.</li>
+          <li>optional: share → <strong>add to home screen</strong> for a full-screen icon.</li>
+        </ol>
+        <p class="note">airplay to an apple tv from control center. the phone stays the remote.</p>
+      </article>
+
+      <article class="device">
+        <div class="device-head"><h3>mac</h3><span class="status"><i></i>browser</span></div>
+        <ol>
+          <li>open <a href="https://multiview.cc/">multiview.cc</a> in safari or chrome.</li>
+          <li>use <a href="https://multiview.cc/tv">multiview.cc/tv</a> with a keyboard: arrows move, enter focuses.</li>
+          <li>airplay or screen mirror from control center, or use an hdmi cable.</li>
+        </ol>
+        <p class="note">download the zip if you want a local copy that runs offline.</p>
+      </article>
+
+      <article class="device">
+        <div class="device-head"><h3>android phones &amp; tablets</h3><span class="status"><i></i>browser</span></div>
+        <ol>
+          <li>open <a href="https://multiview.cc/">multiview.cc</a> in chrome.</li>
+          <li>add to home screen from the menu if you want a full-screen icon.</li>
+          <li>cast to a chromecast or google tv with the home app or the browser’s cast button.</li>
+        </ol>
+      </article>
+
+      <article class="device">
+        <div class="device-head"><h3>google tv · android tv · fire tv</h3><span class="status"><i></i>tv mode</span></div>
+        <ol>
+          <li>open <a href="https://multiview.cc/tv">multiview.cc/tv</a> in the tv browser.</li>
+          <li>remote arrows move. enter focuses. numbers 1–4 jump. <code>y</code> switches tv mode off.</li>
+          <li>no browser? cast or mirror from an android phone or a laptop.</li>
+        </ol>
+        <p class="note">chrome, puffin and the fire tv browser all work. the tv layout hides the paste bar and hover controls.</p>
+      </article>
+
+      <article class="device">
+        <div class="device-head"><h3>apple tv</h3><span class="status air"><i></i>airplay</span></div>
+        <ol>
+          <li>open the wall on an iphone, ipad or mac.</li>
+          <li>turn on <a href="https://multiview.cc/tv">tv mode</a> on that device.</li>
+          <li>airplay or screen mirror from control center.</li>
+        </ol>
+        <p class="note">apple tv has no web browser, so there is no native tvos app in this build. airplay is the path.</p>
+      </article>
+
+      <article class="device">
+        <div class="device-head"><h3>windows &amp; linux</h3><span class="status"><i></i>browser</span></div>
+        <ol>
+          <li>open <a href="https://multiview.cc/">multiview.cc</a> in chrome, edge or firefox.</li>
+          <li>arrows already move on the wall. <a href="https://multiview.cc/tv">tv mode</a> adds the 10-foot layout.</li>
+          <li>download the zip for a local copy.</li>
+        </ol>
+      </article>
+    </div>
+  </section>
+
+  <section id="tuners">
+    <div class="sec-head">
+      <h2>tuners, plex &amp; native apps</h2>
+      <p>the wall can take their streams. it does not replace their apps.</p>
+    </div>
+    <div class="devices">
+      <article class="device">
+        <div class="device-head"><h3>hdhomerun</h3><span class="status"><i></i>m3u + xmltv</span></div>
+        <ol>
+          <li>use Threadfin or xTeVe to expose the tuner as an m3u + xmltv.</li>
+          <li>paste that playlist into <strong>Sources → iptv</strong>.</li>
+          <li>local <code>http</code> tuners work best in the downloaded build on localhost.</li>
+        </ol>
+        <p class="note">an https page cannot load an http tuner stream; the local build can.</p>
+      </article>
+      <article class="device">
+        <div class="device-head"><h3>plex</h3><span class="status"><i></i>via threadfin</span></div>
+        <ol>
+          <li>put Threadfin or xTeVe in front of Plex, or open <a href="https://app.plex.tv">app.plex.tv</a> in a window.</li>
+          <li>plex does not expose a simple framable playlist by itself.</li>
+          <li>a direct HLS URL plays in a tile if your server allows the browser.</li>
+        </ol>
+        <p class="note">the plex app stays separate. the wall links to it; it does not wrap it.</p>
+      </article>
+      <article class="device">
+        <div class="device-head"><h3>tablo &amp; other tuners</h3><span class="status"><i></i>export</span></div>
+        <ol>
+          <li>export an m3u + xmltv with Threadfin or Plex.</li>
+          <li>paste it into <strong>Sources → iptv</strong>, or choose a playlist file.</li>
+          <li>keep the tuner's own app for recordings and its guide.</li>
+        </ol>
+        <p class="note">if a device has no public playlist, the wall cannot see it. a file export usually works.</p>
+      </article>
+      <article class="device">
+        <div class="device-head"><h3>native apps</h3><span class="status air"><i></i>separate</span></div>
+        <ol>
+          <li>the wall is the web app. a tile is a web frame, not a native view.</li>
+          <li>native players can run alongside; link to them or open them in a window.</li>
+          <li>a real tvos or android tv app is a separate native build.</li>
+        </ol>
+        <p class="note">apple tv uses airplay today. google tv and android tv use the tv browser and <a href="/tv">/tv</a>.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="answers">
+    <div class="sec-head">
+      <h2>short answers</h2>
+      <p>the things people ask after the first wall.</p>
+    </div>
+    <div class="toc" aria-label="FAQ sections">
+      <a href="#start"><b>start here</b><span>the first wall, layouts, keys</span></a>
+      <a href="#feeds"><b>feeds</b><span>blocked, dead, 4-up, sound</span></a>
+      <a href="#saved"><b>saved &amp; private</b><span>pricing, boards, downloads</span></a>
+    </div>
+
+    <h3 id="start" style="margin-top:26px">start here</h3>
+    <div class="faq">
+      <details open>
+        <summary>what is multiview.cc?</summary>
+        <div class="answer"><p>a web wall for up to four live streams. paste links, pick a layout, and watch them together. no account, no install.</p></div>
+      </details>
+      <details>
+        <summary>how do i add a stream?</summary>
+        <div class="answer"><p>paste a youtube, twitch, iptv, jellyfin or streaming service link into the bar and press add. it opens in a tile. if the site asks for a login, sign in there with your own account. if a site refuses to be shown in a tile, use <strong>open &amp; sign in</strong> or the window wall.</p></div>
+      </details>
+      <details>
+        <summary>what do the layouts mean?</summary>
+        <div class="answer"><p>1, 2 or 4 visible screens. hidden tiles stay on the board.</p></div>
+      </details>
+      <details>
+        <summary>how do i move a tile?</summary>
+        <div class="answer"><p>press <code>v</code> or open more → arrange, then drag the grip. drop a tile on another to swap them.</p></div>
+      </details>
+      <details>
+        <summary>what is tv mode?</summary>
+        <div class="answer"><p>arrows, enter and 1–4 work on any wall by default. <a href="https://multiview.cc/tv">multiview.cc/tv</a> turns on the 10-foot layout with no browser chrome; <code>y</code> or esc leaves it. it is built for google tv, android tv and fire tv browsers.</p></div>
+      </details>
+      <details>
+        <summary>can i watch on two monitors?</summary>
+        <div class="answer"><p>yes. open the window wall with <code>w</code>, or use two browser windows. each board keeps its own audio focus.</p></div>
+      </details>
+    </div>
+
+    <h3 id="feeds" style="margin-top:30px">feeds</h3>
+    <div class="faq">
+      <details>
+        <summary>why is 4-up slower?</summary>
+        <div class="answer"><p>four players are four video decoders. 1–2 is the fast path; 4 is the heaviest. it works, give 4 a few seconds.</p></div>
+      </details>
+      <details>
+        <summary>why is a tile black?</summary>
+        <div class="answer"><p>the feed ended, the site blocked the frame, or the player needs a click. reload the tile first. if it still fails, open it in a window.</p></div>
+      </details>
+      <details>
+        <summary>why did a stream stop?</summary>
+        <div class="answer"><p>live feeds rotate. the demo boards swap in a live feed automatically. your own links show a local card so the tile never goes blank.</p></div>
+      </details>
+      <details>
+        <summary>how do i hear just one game?</summary>
+        <div class="answer"><p>one tile is the audio source. press the speaker button on that tile. mute all is <code>m</code>.</p></div>
+      </details>
+      <details>
+        <summary>captions?</summary>
+        <div class="answer"><p>the <code>cc</code> button works on youtube tiles. some sites only show their own captions in a window.</p></div>
+      </details>
+      <details>
+        <summary>ads and pop-ups?</summary>
+        <div class="answer"><p>embeds bring the site’s own ads. we never add pop-ups. sites that refuse frames open in a window instead.</p></div>
+      </details>
+      <details>
+        <summary>can i add more than 4 tiles?</summary>
+        <div class="answer"><p>one board holds four visible tiles. make another board for the rest.</p></div>
+      </details>
+    </div>
+
+    <h3 id="saved" style="margin-top:30px">saved &amp; private</h3>
+    <div class="faq">
+      <details>
+        <summary>where are my boards saved?</summary>
+        <div class="answer"><p>in this browser’s local storage. export or import a board from more. clearing site data removes them.</p></div>
+      </details>
+      <details>
+        <summary>do i need an account?</summary>
+        <div class="answer"><p>no. the wall is local-only. if cloud sync is ever switched on, it will be optional.</p></div>
+      </details>
+      <details>
+        <summary>can i download it?</summary>
+        <div class="answer"><p>yes. <a href="/multiview-beta.zip?v=dev" download>download for computer</a>, unzip it and run the start script. phones and tvs use the site directly, no download.</p></div>
+      </details>
+      <details>
+        <summary>is it free?</summary>
+        <div class="answer"><p>yes, until beta ends. after beta, hosted access is <strong>$5 one time fee</strong> for new accounts. the beta is not a subscription and needs no card.</p></div>
+      </details>
+      <details>
+        <summary>what does the downloaded app cost?</summary>
+        <div class="answer"><p>nothing. it is yours to keep and use. no account, no subscription, no license server, no kill switch.</p></div>
+      </details>
+      <details>
+        <summary>what does the $5 cover?</summary>
+        <div class="answer"><p>hosted access: accounts, cloud boards, sync and share links. the downloaded app does not need it.</p></div>
+      </details>
+      <details>
+        <summary>can i keep using my beta copy?</summary>
+        <div class="answer"><p>yes. the beta build keeps working exactly as it is. updates are separate releases.</p></div>
+      </details>
+      <details>
+        <summary>do i own the software?</summary>
+        <div class="answer"><p>you own your copy and can keep using it. the code and design are proprietary; see the <a href="/LICENSE">licence</a>. there is no account check or remote off switch.</p></div>
+      </details>
+      <details>
+        <summary>where is the source code?</summary>
+        <div class="answer"><p>the public github will be linked at the bottom of this page when it ships. the downloaded app is the full static build — html, css, js, no server or hidden backend. the licence still applies: the repo is for inspection, not for copying or redistribution.</p></div>
+      </details>
+      <details>
+        <summary>does this get around a login or paywall?</summary>
+        <div class="answer"><p>no. it does not bypass a login or a paywall. if a service needs an account, you sign in inside that tile with your own account, and paid content still needs your subscription. we never ask for, see or store your password. only watch what you have the right to watch.</p></div>
+      </details>
+    </div>
+  </section>
+
+  <div class="stuck">
+    <h2>still stuck?</h2>
+    <p>reload the tile first. then reload the page. then swap the feed. if a site still refuses, it needs its own window.</p>
+    <div class="row">
+      <a href="/">open the wall</a>
+      <a href="/tv">try tv mode</a>
+      <a href="#devices">device steps</a>
+    </div>
+  </div>
+
+  <p class="note" style="max-width:900px;margin:18px auto 0;padding:0 22px">guides: <a href="/football.html">football</a> · <a href="/news.html">news</a> · <a href="/iptv.html">iptv</a> · <a href="/plex.html">plex</a> · <a href="/living-room.html">tv</a> · <a href="/mac.html">mac</a></p>
+<footer>
+    <span>multiview.cc · <a href="/legal.html">legal &amp; privacy</a> · <a href="/status.html">status</a> · <a href="/LICENSE">licence</a> ·
+      <!-- When the public repository is live, replace the span with:
+           <a href="https://github.com/OWNER/REPO" target="_blank" rel="noopener noreferrer">public repo ↗</a> -->
+      <span class="repo-soon" id="repoSlot">public repo · coming soon</span></span>
+    <span>no account · no tracking · <a href="/">back to the wall</a></span>
+  </footer>
+</main>
+</body>
+</html>

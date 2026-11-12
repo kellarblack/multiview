@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tv>
+  <channel id="bbcone.uk"><display-name>BBC One</display-name></channel>
+  <channel id="bbctwo.uk"><display-name>BBC Two</display-name></channel>
+  <programme start="20200101000000 +0000" stop="20300101000000 +0000" channel="bbcone.uk">
+    <title>Test Programme One</title><desc>Fixture entry, very wide window.</desc>
+  </programme>
+  <programme start="20200101000000 +0000" stop="20300101000000 +0000" channel="bbctwo.uk">
+    <title>Test Programme Two</title>
+  </programme>
+  <programme start="20300101000000 +0000" stop="20300101010000 +0000" channel="bbctwo.uk">
+    <title>Future Programme</title>
+  </programme>
+</tv>

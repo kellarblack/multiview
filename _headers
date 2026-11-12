@@ -1,0 +1,122 @@
+# multiview.cc — edge headers for Cloudflare Pages and Netlify.
+# GitHub Pages ignores this file; see DEPLOY.md.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), fullscreen=(self)
+  X-Frame-Options: SAMEORIGIN
+  X-Permitted-Cross-Domain-Policies: none
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https: http:; media-src 'self' data: blob: https: http:; font-src 'self' data:; connect-src 'self' blob: data: https: http:; frame-src 'self' about: https: http:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'self'
+
+# The shell must always be revalidated so a deploy is picked up on reload.
+/
+  Cache-Control: no-cache
+
+/index.html
+  Cache-Control: no-cache
+
+/tv
+  Cache-Control: no-cache
+
+/tv.html
+  Cache-Control: no-cache
+
+/help
+  Cache-Control: no-cache
+
+/help.html
+  Cache-Control: no-cache
+
+/legal.html
+  Cache-Control: no-cache
+
+/football
+  Cache-Control: no-cache
+
+/football.html
+  Cache-Control: no-cache
+/news
+  Cache-Control: no-cache
+
+/news.html
+  Cache-Control: no-cache
+/iptv
+  Cache-Control: no-cache
+
+/iptv.html
+  Cache-Control: no-cache
+/plex
+  Cache-Control: no-cache
+
+/plex.html
+  Cache-Control: no-cache
+/living-room
+  Cache-Control: no-cache
+
+/living-room.html
+  Cache-Control: no-cache
+/mac
+  Cache-Control: no-cache
+
+/mac.html
+  Cache-Control: no-cache
+
+/status
+  Cache-Control: no-cache
+
+/status.html
+  Cache-Control: no-cache
+
+/health.json
+  Cache-Control: no-cache
+
+/404.html
+  Cache-Control: no-cache
+
+/sw.js
+  Cache-Control: no-cache
+
+/media/multiview-demo.mp4
+  Cache-Control: public, max-age=31536000, immutable
+
+/media/multiview-demo-poster.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+/media/hero/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/.well-known/security.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=86400
+
+/multiview-beta.zip
+  Cache-Control: no-cache
+  Content-Disposition: attachment; filename="multiview-beta.zip"
+  X-Robots-Tag: noindex
+
+# Versioned in the URL (?v=69, ?v=73, ?v=97) — safe to cache for a day.
+# Explicit paths rather than *.css / *.js: Cloudflare Pages and Netlify both match
+# these reliably, and every file is listed anyway.
+/styles.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/app.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/dashboard.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/sources.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/sync.js
+  Cache-Control: public, max-age=86400
+
+/vendor/hls.min.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.png
+  Cache-Control: public, max-age=604800
+
