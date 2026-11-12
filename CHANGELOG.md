@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.9.37 — 2026-11-12
+
+### Fixed
+
+- **Ready-made walls button styling.** The new CTA shipped with the old
+  `styles.css?v=69` URL, so the CSS was cached and the button rendered unstyled.
+  Bumped to `styles.css?v=70` and rebuilt.
+
+### Notes
+
+- Build `f436400221` is live. Client 59/0/2 (61 checks), bundle 77/77, live
+  100/100.
+
+
 ## 1.9.36 — 2026-11-12
 
 ### Added
