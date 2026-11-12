@@ -264,7 +264,7 @@ window.MVDash = (function () {
             '<a class="link-btn" href="help.html">help &amp; devices</a>' +
             '<a class="link-btn" href="legal.html">legal</a>' +
             '<a class="link-btn" href="status.html">status</a>' +
-            '<span class="repo-soon">public repo · coming soon</span>' +
+            '<a class="link-btn" href="https://github.com/kellarblack/multiview" target="_blank" rel="noopener noreferrer">github ↗</a>' +
           '</div>' +
           '<span class="home-footer-note"><span class="dot" data-status-dot></span><span data-status="foot">checking feeds…</span> · <a href="status.html">status</a> · multiview.cc · free in beta</span>' +
         '</footer>' +

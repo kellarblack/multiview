@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.9.36 — 2026-11-12
+
+### Added
+
+- **GitHub is live:** https://github.com/kellarblack/multiview (public).
+- `deploy.yml` has deployed successfully with the scoped Cloudflare token; CI
+  passes. Secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are set.
+- Home footer and Help now link the public repo instead of “coming soon”.
+
+### Notes
+
+- Build `b43755b199` is live via GitHub Actions. Client 59/0/2 (61 checks), bundle
+  77/77, live 100/100.
+
+
 ## 1.9.35 — 2026-11-12
 
 ### Changed

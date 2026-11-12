@@ -163,4 +163,5 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 156 | Pro naming | DONE | Pro replaces hosted site across Home, plan, Help, Legal; $5 one-time tier |
 | 157 | Subtle forward tilt | DONE | 3.6° max, 6px drift, 0.14 follow; leans toward cursor |
 | 158 | Preset library button | DONE | Home grid replaced by one ready-made walls strip + browse; library in dialog |
+| 159 | Public GitHub + Actions | DONE | Repo public, secrets set, deploy/CI green, source links live |
 

@@ -35,3 +35,12 @@ npx wrangler pages deployment tail --project-name multiview-cc
 ```
 
 Client errors are logged there. No cookies, user IDs or query strings are sent.
+
+
+## Current state (12 Nov 2026)
+
+- Repo: https://github.com/kellarblack/multiview (public)
+- Secrets: `CLOUDFLARE_API_TOKEN` (Pages:Edit) and `CLOUDFLARE_ACCOUNT_ID`
+- `ci`, `deploy` and weekly `uptime` workflows are on `main`
+- `mdown` is starred so it sits above multiview in Popular repositories; GitHub
+  has no API for reordering the pinned list, so the star is the lever.
