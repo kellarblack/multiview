@@ -234,7 +234,7 @@ sites that provide none. Those are browser boundaries, not missing features.
 ## Access model
 
 **Beta is free.** Opening the app during beta creates a founder record in the browser
-(`MV-XXXX-XXXX`, join date). After beta ends, **hosted access** to multiview.cc is a
+(`MV-XXXX-XXXX`, join date). After beta ends, **pro access** to multiview.cc is a
 **$5 one time fee** for new accounts. The **downloaded app is free to keep and use**; it
 does not need an account or a subscription.
 
@@ -251,7 +251,7 @@ The **optional backend** also supports a paid hosted model:
 
 - **7-day free trial** per account, **one per IP** (IPs are hashed, never stored raw).
 - When the trial ends, board sync, share links and cloud features return **402** until the
-  account has hosted access (`$5 one time fee`). Login, account status and checkout stay open to upgrade.
+  account has pro access (`$5 one time fee`). Login, account status and checkout stay open to upgrade.
 - Settings: `MV_TRIAL_DAYS`, `MV_TRUST_PROXY`, `MV_IP_SECRET` (see `server/README.md`).
 
 A static page cannot be revoked once downloaded, so the trial gates the *hosted* layer,

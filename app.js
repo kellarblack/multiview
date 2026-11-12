@@ -3717,7 +3717,7 @@
     if (!label) return;
     if (planInfo.mode === 'trial') label.textContent = 'trial · ' + Math.max(0, planInfo.daysLeft) + 'd';
     else if (planInfo.mode === 'locked') label.textContent = 'trial ended';
-    else label.textContent = PLAN.stage === 'beta' ? 'beta · free' : 'hosted · $5';
+    else label.textContent = PLAN.stage === 'beta' ? 'beta · free' : 'pro · $5';
   }
 
   function refreshPlan() {
@@ -3743,28 +3743,28 @@
     if (planInfo.mode === 'trial') {
       $('[data-plan="status"]', dialog).textContent = 'trial';
       $('[data-plan="headline"]', dialog).textContent = Math.max(0, planInfo.daysLeft) + ' days left in your trial';
-      $('[data-plan="copy"]', dialog).textContent = 'everything works until the trial ends. after that, hosted ' +
-        'access is ' + PLAN.price + ' ' + PLAN.priceNote + '.';
+      $('[data-plan="copy"]', dialog).textContent = 'everything works until the trial ends. after that, pro ' +
+        'is ' + PLAN.price + ' ' + PLAN.priceNote + '.';
     } else if (planInfo.mode === 'locked') {
       $('[data-plan="status"]', dialog).textContent = 'trial ended';
-      $('[data-plan="headline"]', dialog).textContent = 'hosted access is ' + PLAN.price + ' ' + PLAN.priceNote;
+      $('[data-plan="headline"]', dialog).textContent = 'pro is ' + PLAN.price + ' ' + PLAN.priceNote;
       $('[data-plan="copy"]', dialog).textContent = 'your ' + PLAN.trialDays + '-day trial is over. local boards and the ' +
-        'downloaded app keep working. hosted access is ' + PLAN.price + ' ' + PLAN.priceNote + '.';
+        'downloaded app keep working. pro is ' + PLAN.price + ' ' + PLAN.priceNote + '.';
     } else {
-      $('[data-plan="status"]', dialog).textContent = beta ? 'free beta' : 'hosted site';
-      $('[data-plan="headline"]', dialog).textContent = beta ? 'free while we\'re in beta.' : 'hosted access is ' + PLAN.price + ' ' + PLAN.priceNote;
+      $('[data-plan="status"]', dialog).textContent = beta ? 'free beta' : 'pro';
+      $('[data-plan="headline"]', dialog).textContent = beta ? 'free while we\'re in beta.' : 'pro is ' + PLAN.price + ' ' + PLAN.priceNote;
       $('[data-plan="copy"]', dialog).textContent = beta
-        ? 'the app you download is yours to keep. after beta, hosted access is ' + PLAN.price + ' ' + PLAN.priceNote + '.'
+        ? 'the app you download is yours to keep. after beta, pro is ' + PLAN.price + ' ' + PLAN.priceNote + '.'
         : 'accounts, cloud boards, sync and share links. the app you download is free.';
     }
     $('[data-plan="price"]', dialog).textContent = PLAN.price + ' ' + PLAN.priceNote;
     const btn = $('[data-plan="upgrade"]', dialog);
     btn.disabled = !planReady();
-    btn.textContent = beta ? 'hosted · ' + PLAN.price + ' — coming soon' : (planInfo.mode === 'locked' ? 'get hosted · ' + PLAN.price : 'hosted · ' + PLAN.price + ' ' + PLAN.priceNote);
+    btn.textContent = beta ? 'pro · ' + PLAN.price + ' — coming soon' : (planInfo.mode === 'locked' ? 'get pro · ' + PLAN.price : 'pro · ' + PLAN.price + ' ' + PLAN.priceNote);
     btn.title = planReady() ? 'Open checkout' : 'Billing is not switched on yet';
     $('[data-plan="note"]', dialog).textContent = beta
-      ? 'your downloaded app is yours. hosted access is the paid part.'
-      : 'hosted access needs the optional sync backend and stripe keys.';
+      ? 'your downloaded app is yours. pro is the paid part.'
+      : 'pro needs the optional sync backend and stripe keys.';
   }
 
   function renderWallDialog() {

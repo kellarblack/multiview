@@ -256,7 +256,7 @@ window.MVDash = (function () {
         '<section class="home-price-line">' +
           '<p><span class="pill ok"><i></i>free in beta</span>' +
             'no account, no card <span class="sep">·</span> ' +
-            'hosted site <strong>$5 one time</strong> after beta <span class="sep">·</span> ' +
+            'pro <strong>$5 one time</strong> after beta <span class="sep">·</span> ' +
             'the app you download is yours.</p>' +
           '<button class="link-btn" data-act="plan">plans →</button>' +
         '</section>' +

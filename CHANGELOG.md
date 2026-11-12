@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.9.33 — 2026-11-12
+
+### Changed
+
+- **“Pro” replaces “hosted site”** everywhere users see it: Home price line, plan
+  dialog, plan chip after beta, Help, and Legal. Pro is the $5 one-time tier:
+  hosted multiview, accounts, cloud boards, sync and live share links. The
+  downloaded app stays free.
+- Trial/locked copy now says “pro” too.
+
+### Notes
+
+- Build `f8434d55e0` is live. Client 59/0/2 (61 checks), bundle 77/77, live
+  100/100.
+
+
 ## 1.9.32 — 2026-11-12
 
 ### Added
