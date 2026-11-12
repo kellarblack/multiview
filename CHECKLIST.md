@@ -162,4 +162,5 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 155 | Local git | DONE | main, commit 2fa2557; GitHub remote next |
 | 156 | Pro naming | DONE | Pro replaces hosted site across Home, plan, Help, Legal; $5 one-time tier |
 | 157 | Subtle forward tilt | DONE | 3.6° max, 6px drift, 0.14 follow; leans toward cursor |
+| 158 | Preset library button | DONE | Home grid replaced by one ready-made walls strip + browse; library in dialog |
 

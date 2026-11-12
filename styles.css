@@ -3992,3 +3992,49 @@ body[data-view="wall"] .plan-chip { display: none; }
   line-height: 1.55;
   color: var(--muted-dim);
 }
+
+
+/* one quiet entry point for the preset library */
+.home-walls-cta { margin-top: 30px; }
+.walls-cta {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 17px 20px;
+  border: .5px solid var(--line);
+  border-radius: 14px;
+  background:
+    radial-gradient(520px 120px at 8% 0%, rgba(110, 168, 255, .11), transparent 70%),
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+  color: inherit;
+  text-align: left;
+  transition: border-color .16s var(--ease), background .16s var(--ease), transform .16s var(--ease);
+}
+.walls-cta:hover { border-color: var(--accent-line); background: rgba(110, 168, 255, .075); }
+.walls-cta:active { transform: scale(.995); }
+.walls-cta-copy b {
+  display: block;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -.02em;
+  color: #eef3fb;
+}
+.walls-cta-copy span {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.walls-cta-go {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--accent);
+  white-space: nowrap;
+}
+@media (max-width: 560px) {
+  .walls-cta { align-items: flex-start; flex-direction: column; gap: 10px; }
+}

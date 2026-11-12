@@ -182,10 +182,6 @@ window.MVDash = (function () {
       return ['basketball', 'soccer', 'cfb'].indexOf(sport.key) !== -1;
     });
     if (featuredSports.length < 3) featuredSports = allSports.slice(0, 3);
-    var featuredPresets = ['now', 'sports', 'news', 'creators', 'hacker'].map(function (key) {
-      return presets.filter(function (p) { return p.key === key; })[0];
-    }).filter(Boolean);
-    if (featuredPresets.length < 4) featuredPresets = presets.slice(0, 5);
 
     host.innerHTML =
       '<div class="home">' +
@@ -229,14 +225,14 @@ window.MVDash = (function () {
           '</div>' +
         '</section>' +
 
-        '<section class="home-presets">' +
-          '<div class="home-head">' +
-            '<h2>ready-made walls</h2>' +
-            '<button class="link-btn" data-act="all-walls">all walls →</button>' +
-          '</div>' +
-          '<div class="preset-grid">' +
-            featuredPresets.map(function (p) { return presetCard(p); }).join('') +
-          '</div>' +
+        '<section class="home-walls-cta">' +
+          '<button class="walls-cta" data-act="all-walls">' +
+            '<span class="walls-cta-copy">' +
+              '<b>ready-made walls</b>' +
+              '<span>' + presets.length + ' starting points — football, news, toons, tech, science and more.</span>' +
+            '</span>' +
+            '<span class="walls-cta-go">browse →</span>' +
+          '</button>' +
         '</section>' +
 
         '<section class="home-signin">' +

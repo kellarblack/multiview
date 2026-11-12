@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.9.35 — 2026-11-12
+
+### Changed
+
+- **Ready-made walls is one button now.** Home no longer shows a six-card preset
+  grid. It shows a single wide **ready-made walls** strip with the count and
+  “browse →”; the full 15-wall library opens in the dialog.
+- The Home path is now hero → live sport → try a wall → ready-made walls →
+  streaming login → price line. Less to scan.
+
+### Notes
+
+- Build `2c207bf275` is live. Client 59/0/2 (61 checks), bundle 77/77, live
+  100/100.
+
+
 ## 1.9.34 — 2026-11-12
 
 ### Changed

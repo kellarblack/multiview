@@ -2,7 +2,7 @@
 
 ## Live now
 
-**Cloudflare Pages** · project **`multiview-cc`** · live build `15b6f4d2fc` (deployed 2026-11-12)
+**Cloudflare Pages** · project **`multiview-cc`** · live build `2c207bf275` (deployed 2026-11-12)
 (Home is the default landing).
 
 - **https://multiview.cc** — canonical, HTTPS 200, HSTS, CSP and cache headers.
@@ -48,7 +48,7 @@ app still works fully; only accounts, cloud boards, share links and billing are 
    ```html
    <link rel="stylesheet" href="styles.css?v=58">
    <script src="sources.js?v=3"></script>
-   <script src="dashboard.js?v=75"></script>
+   <script src="dashboard.js?v=76"></script>
    <script src="app.js?v=87"></script>
    ```
 
