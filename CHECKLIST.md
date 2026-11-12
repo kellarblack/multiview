@@ -158,4 +158,6 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 151 | CI + deploy + errors | DONE | ci.yml, deploy.yml, wrangler, client beacon |
 | 152 | SEO guides | DONE | football, news, iptv, plex, living-room, mac + ?preset |
 | 153 | Share on Threads | DONE | Share dialog: Threads intent, copy link, native share |
+| 154 | Functions live | DONE | Wrangler deployed _worker.js; /api/live, /api/frame, /api/error verified |
+| 155 | Local git | DONE | main, commit 2fa2557; GitHub remote next |
 

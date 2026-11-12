@@ -1,7 +1,9 @@
 # GitHub setup
 
-The site currently deploys by direct upload. That cannot run Pages Functions, cron
-health checks, CI or rollback. Move it to GitHub when you want the full setup.
+Wrangler can deploy the site **and** `_worker.js` today. GitHub is still needed for
+CI, scheduled health checks, secrets, rollback and a public repo. The Cloudflare
+dashboard/API direct upload serves `_worker.js` as a static file; Wrangler compiles
+it as an Advanced Mode function.
 
 ## One-time
 
@@ -24,9 +26,9 @@ health checks, CI or rollback. Move it to GitHub when you want the full setup.
 
 ## Functions
 
-`_worker.js` is an Advanced Mode Pages Function. Direct upload and Wrangler both
-include it from `dist/`; `/api/live`, `/api/frame` and `/api/error` work without a
-separate Functions folder.
+`_worker.js` is an Advanced Mode Pages Function. Wrangler compiles it from `dist/`;
+`/api/live`, `/api/frame` and `/api/error` are live on the current deployment. The
+Cloudflare API upload path used before treats it as a plain file, so use Wrangler.
 
 ```sh
 npx wrangler pages deployment tail --project-name multiview-cc

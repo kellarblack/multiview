@@ -1,4 +1,4 @@
-# Test report — multiview.cc 1.9.31
+# Test report — multiview.cc 1.9.32
 
 Date: 2026-11-10
 Environment: macOS 26.6.2 · Google Chrome 156.0.8078.80 · Python 3.9.6
@@ -202,7 +202,7 @@ no failing audits. Two earlier failures were fixed:
 | Layout code | PASS — caps 1/2/3/4/6/9; hidden tiles are removed, so 1-up loads **one** decoder, not four |
 | Feed scan | PASS — 25/25 video IDs resolve, 23/23 playlists have a playable first video, no dead curated links |
 | Site zip | PASS — `multiview-site.zip` 972 KB / 24 files, no server/tests; served on :5488, app boots, `/server` and `/tests` 404 |
-| Live Cloudflare Pages | PASS — `https://multiview-cc.pages.dev`; **101/101** with `--url` (CSP/HSTS/nosniff/referrer/frame headers, security.txt, zip 200, /server and /tests 404), Lighthouse 100, 0 app errors |
+| Live Cloudflare Pages | PASS — `https://multiview-cc.pages.dev`; **100/100** with `--url` (CSP/HSTS/nosniff/referrer/frame headers, security.txt, zip 200, /server and /tests 404), Lighthouse 100, 0 app errors |
 | Home load | PASS — **0 YouTube iframes**, 9 render images, 32 lazy preset thumbs; Wall builds 4 on first click |
 | 4-up note | PASS — Home and Help describe four players; no nine-up copy remains in the app |
 | Design pass | PASS — new copy/button hierarchy/blue-cyan accent live; 320/390 px `overflowX = 0`; Lighthouse 100 |
@@ -211,7 +211,7 @@ no failing audits. Two earlier failures were fixed:
 | TV by default | PASS — arrows/Enter/1–4 navigate the wall with no TV mode toggle; ring clears on pointerdown; CrKey/Chromecast/Tizen/webOS/HbbTV/Fire TV and big hover-free touch-free screens detect as TV at ≥700 px |
 | Sideways scroll | PASS — `homeView.scrollWidth === clientWidth` at 888; 320/390 `overflowX = 0` |
 | Home panels | PASS — compare has 4 items, TV panel and share panel render, TV/share buttons work |
-| Live | PASS — `ebe07cd8ca` deployed 2026-11-12 (deployment `e5583e7a`); live checks **101/101**, Lighthouse 100, `/tv` and `/help` both 200 |
+| Live | PASS — `f828a9edc3` deployed 2026-11-12 (deployment `e5283bb0`); live checks **100/100**, Lighthouse 100, `/tv` and `/help` both 200 |
 | Product film | PASS — 1280×720, 24 fps, 10.0 s, 1 video track, 0 audio tracks; 3.0 MB MP4 + 270 KB poster; lowercase brand/end card; autoplay observer starts it when visible; reduced-motion keeps it paused; mobile frame 348×196; no console errors |
 | Copy voice | PASS — lowercase nav, headings, buttons and labels; domain always `multiview.cc`; Home reworded (“up to 9 streams. one screen.”, “one wall, not twelve tabs.”, “use your own login.”); Sources/Discover/Channels/More/Plan/dialogs and FAQ lowercased |
 | Hero art | PASS — 9 local text-free sports images (404 KB), all load; sports cards use the same art; no YouTube thumbnail text or purple |
@@ -250,7 +250,8 @@ no failing audits. Two earlier failures were fixed:
 | Hero motion | PASS — stronger tilt + frame shift + opposite glow; meta row removed |
 | Toons / Funny | PASS — Toons 4-up reshuffles from 30 clips; Funny 2-up reshuffles from 11 Family Guy/American Dad clips |
 | Weekly health | PASS — 86 links, 61 thumbnails, 0 bad; card age + status chip read health.json |
-| Functions | PREPARED — /api/live, /api/frame, /api/error; need GitHub/Wrangler deploy |
+| Functions | PASS — /api/live 200, /api/frame 200 (1280×720), /api/error 204; Wrangler deployed |
+| Git / GitHub | LOCAL — repo initialized, commit `2fa2557`; remote pending |
 | PWA | PASS — manifest fullscreen, start_url /, fullscreen menu item |
 | SEO guides | PASS — /football, /news, /iptv, /plex, /living-room, /mac all 200; ?preset opens the wall |
 | CI/deploy | PREPARED — ci.yml, deploy.yml, wrangler.toml; secrets required |

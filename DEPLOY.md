@@ -2,7 +2,7 @@
 
 ## Live now
 
-**Cloudflare Pages** · project **`multiview-cc`** · live build `ebe07cd8ca` (deployed 2026-11-12)
+**Cloudflare Pages** · project **`multiview-cc`** · live build `f828a9edc3` (deployed 2026-11-12)
 (Home is the default landing).
 
 - **https://multiview.cc** — canonical, HTTPS 200, HSTS, CSP and cache headers.
@@ -306,3 +306,14 @@ same path, so they still show up. This is aggregate, not per-person.
 If you need exact click counts, add a tiny Pages Function (`/download`) that
 increments a KV counter and redirects to the zip. That needs Cloudflare KV and a
 Wrangler/GitHub deploy; it is not part of the static build.
+
+
+## Wrangler deploy (works now)
+
+```sh
+python3 build.py
+npx wrangler pages deploy dist --project-name multiview-cc --branch main
+```
+
+Wrangler compiles `_worker.js` as a Pages Advanced Mode function. The Cloudflare
+API direct upload treats it as a static file, so use Wrangler for `/api/*`.

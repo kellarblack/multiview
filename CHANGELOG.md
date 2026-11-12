@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.9.32 — 2026-11-12
+
+### Added
+
+- **Wrangler deploy is working.** `npx wrangler pages deploy dist --project-name
+  multiview-cc --branch main` compiled `_worker.js` and deployed the Advanced Mode
+  function. `/api/live`, `/api/frame` and `/api/error` are live:
+  - `/api/live?channel=…` resolved NewsNation to `H_bWnIOr-h0`
+  - `/api/frame` returned a 1280×720 cached still
+  - `/api/error` returned 204
+- **Local git repo initialized** (`main`, commit `2fa2557`). GitHub remote is the
+  remaining step; the repo page was opened for creation.
+
+### Notes
+
+- Build `f828a9edc3` is live. Client 59/0/2 (61 checks), bundle 77/77, live
+  100/100. GitHub Actions (CI, weekly health, deploy) activate after the repo is
+  pushed.
+
+
 ## 1.9.31 — 2026-11-12
 
 ### Added
