@@ -430,12 +430,12 @@ window.MVDash = (function () {
         var tickTilt = function () {
           tiltRaf = 0;
           if (!tiltRender) return;
-          cx += (tx - cx) * 0.18;
-          cy += (ty - cy) * 0.18;
-          tiltRender.style.setProperty('--ry', (cx * 14).toFixed(2) + 'deg');
-          tiltRender.style.setProperty('--rx', (-cy * 11).toFixed(2) + 'deg');
-          tiltRender.style.setProperty('--mx', (cx * -20).toFixed(2) + 'px');
-          tiltRender.style.setProperty('--my', (cy * -16).toFixed(2) + 'px');
+          cx += (tx - cx) * 0.14;
+          cy += (ty - cy) * 0.14;
+          tiltRender.style.setProperty('--ry', (cx * -6).toFixed(2) + 'deg');
+          tiltRender.style.setProperty('--rx', (cy * 5).toFixed(2) + 'deg');
+          tiltRender.style.setProperty('--mx', (cx * 8).toFixed(2) + 'px');
+          tiltRender.style.setProperty('--my', (cy * 7).toFixed(2) + 'px');
           if (Math.abs(tx - cx) > 0.002 || Math.abs(ty - cy) > 0.002) {
             tiltRaf = requestAnimationFrame(tickTilt);
           }

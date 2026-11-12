@@ -161,4 +161,5 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 154 | Functions live | DONE | Wrangler deployed _worker.js; /api/live, /api/frame, /api/error verified |
 | 155 | Local git | DONE | main, commit 2fa2557; GitHub remote next |
 | 156 | Pro naming | DONE | Pro replaces hosted site across Home, plan, Help, Legal; $5 one-time tier |
+| 157 | Subtle forward tilt | DONE | 3.6° max, 6px drift, 0.14 follow; leans toward cursor |
 

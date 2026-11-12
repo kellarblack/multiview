@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.9.34 — 2026-11-12
+
+### Changed
+
+- **The hero tile now leans toward the cursor, not away.** The frame shifts with
+  the pointer, the right side comes forward when you move right, and the bottom
+  comes forward when you move down.
+- **Much calmer:** max ~3.6° of tilt and ~6 px of drift (down from ~8.4°), with a
+  slower 0.14 follow. It reads as a little 3D tile, not a camera swing.
+
+### Notes
+
+- Build `15b6f4d2fc` is live. Client 59/0/2 (61 checks), bundle 77/77, live
+  100/100.
+
+
 ## 1.9.33 — 2026-11-12
 
 ### Changed
