@@ -179,7 +179,7 @@ window.MVDash = (function () {
 
   function scoreCacheRead() {
     try {
-      var raw = sessionStorage.getItem('multiview.scores.v2');
+      var raw = sessionStorage.getItem('multiview.scores.v3');
       if (!raw) return null;
       var parsed = JSON.parse(raw);
       if (!parsed || Date.now() - parsed.at > 90000) return null;
@@ -188,7 +188,7 @@ window.MVDash = (function () {
   }
 
   function scoreCacheWrite(games) {
-    try { sessionStorage.setItem('multiview.scores.v2', JSON.stringify({ at: Date.now(), games: games })); } catch (e) { /* ignore */ }
+    try { sessionStorage.setItem('multiview.scores.v3', JSON.stringify({ at: Date.now(), games: games })); } catch (e) { /* ignore */ }
   }
 
   function scoreTime(value) {
