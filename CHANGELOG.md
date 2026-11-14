@@ -13,7 +13,7 @@
 
 ### Notes
 
-- Build `044353df56` is live. Client 59/0/2 (61 checks), bundle 77/77, live
+- Build `d602239922` is live. Client 59/0/2 (61 checks), bundle 77/77, live
   100/100.
 
 
