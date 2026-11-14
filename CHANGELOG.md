@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.9.47 — 2026-11-14
+
+### Changed
+
+- Per-league score cap now takes effect on cached results too (cache key
+  `multiview.scores.v3`).
+- The score row only fades at its right edge when it actually overflows.
+
+### Notes
+
+- Build `e38934850c`. Client 59/0/2 (61 checks), bundle 77/77.
+
+
 ## 1.9.45 — 2026-11-14
 
 ### Changed

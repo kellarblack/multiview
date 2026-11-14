@@ -259,10 +259,22 @@ window.MVDash = (function () {
     section.hidden = false;
     var row = section.querySelector('.scores-row');
     var note = section.querySelector('.scores-note');
-    if (row) row.innerHTML = games.map(scoreCard).join('');
+    if (row) {
+      row.innerHTML = games.map(scoreCard).join('');
+      paintScoreScroll(row);
+    }
     if (note) {
       var done = games.filter(function (g) { return g.state === 'post'; }).length;
       note.textContent = (liveCount(games) ? liveCount(games) + ' live' : (done ? 'final' : 'today')) + ' · updated just now';
+    }
+  }
+
+  function paintScoreScroll(row) {
+    if (!row) return;
+    row.classList.toggle('is-scroll', row.scrollWidth > row.clientWidth + 4);
+    if (!row.dataset.scrollBound) {
+      row.dataset.scrollBound = '1';
+      window.addEventListener('resize', function () { paintScoreScroll(row); }, { passive: true });
     }
   }
 
