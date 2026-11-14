@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.9.51 — 2026-11-14
+
+### Changed
+
+- **Smaller uptime.** The chip sparkline is 8px tall with 2px bars (nine slots,
+  five on a phone) instead of 12px with 3px bars, and the `/status` graph dropped
+  from 34px to 24px. Same data, less furniture.
+
+### Notes
+
+- Build `227e72578d`. Client 59/0/2 (61 checks), bundle 77/77.
+
+
 ## 1.9.50 — 2026-11-14
 
 ### Added
