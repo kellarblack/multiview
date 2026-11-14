@@ -66,8 +66,8 @@ const SCORE_LEAGUES = [
   { label: 'NFL', path: 'football/nfl' },
   { label: 'MLB', path: 'baseball/mlb' },
   { label: 'NHL', path: 'hockey/nhl' },
-  { label: 'Premier League', path: 'soccer/eng.1' },
-  { label: 'College football', path: 'football/college-football' },
+  { label: 'EPL', path: 'soccer/eng.1' },
+  { label: 'CFB', path: 'football/college-football' },
 ];
 
 function scoreLink(event) {
@@ -121,7 +121,7 @@ async function handleScores(request) {
       if (game.away.abbr || game.home.abbr) games.push(game);
     }
   }
-  const rank = { in: 0, pre: 1, post: 2 };
+  const rank = { in: 0, post: 1, pre: 2 };
   games.sort((a, b) => (rank[a.state] || 3) - (rank[b.state] || 3) || String(a.date).localeCompare(String(b.date)));
   const response = json({ generated: new Date().toISOString(), games: games.slice(0, 8) }, 200, 60);
   await cache.put(request, response.clone());

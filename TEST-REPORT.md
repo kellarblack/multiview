@@ -1,4 +1,4 @@
-# Test report — multiview.cc 1.9.43
+# Test report — multiview.cc 1.9.44
 
 Date: 2026-11-10
 Environment: macOS 26.6.2 · Google Chrome 156.0.8078.80 · Python 3.9.6
@@ -211,7 +211,7 @@ no failing audits. Two earlier failures were fixed:
 | TV by default | PASS — arrows/Enter/1–4 navigate the wall with no TV mode toggle; ring clears on pointerdown; CrKey/Chromecast/Tizen/webOS/HbbTV/Fire TV and big hover-free touch-free screens detect as TV at ≥700 px |
 | Sideways scroll | PASS — `homeView.scrollWidth === clientWidth` at 888; 320/390 `overflowX = 0` |
 | Home panels | PASS — compare has 4 items, TV panel and share panel render, TV/share buttons work |
-| Live | PASS — `949767d884` deployed 2026-11-12 (GitHub Actions (public repo)); live checks **100/100**, Lighthouse 100, `/tv` and `/help` both 200 |
+| Live | PASS — `6f4643f599` deployed 2026-11-12 (GitHub Actions (public repo)); live checks **100/100**, Lighthouse 100, `/tv` and `/help` both 200 |
 | Product film | PASS — 1280×720, 24 fps, 10.0 s, 1 video track, 0 audio tracks; 3.0 MB MP4 + 270 KB poster; lowercase brand/end card; autoplay observer starts it when visible; reduced-motion keeps it paused; mobile frame 348×196; no console errors |
 | Copy voice | PASS — lowercase nav, headings, buttons and labels; domain always `multiview.cc`; Home reworded (“up to 9 streams. one screen.”, “one wall, not twelve tabs.”, “use your own login.”); Sources/Discover/Channels/More/Plan/dialogs and FAQ lowercased |
 | Hero art | PASS — 9 local text-free sports images (404 KB), all load; sports cards use the same art; no YouTube thumbnail text or purple |
@@ -273,7 +273,7 @@ no failing audits. Two earlier failures were fixed:
 | Import preview | PASS — shared board shows name, count, layout, `youtube.com, example.com, twitch.tv`; all-evil board rejected |
 | Domain | PASS — apex HTTPS 200, HSTS/CSP/XFO/nosniff; Universal SSL active; `www` 301 to apex; Pages domain active |
 | Custom domain | PASS — Porkbun delegates to Cloudflare; SSL revalidated; apex live, www redirects |
-| Asset cache | PASS — live `app.js?v=101` / `dashboard.js?v=80` / `styles.css?v=77` → `public, max-age=31536000, immutable`; HTML `no-cache` |
+| Asset cache | PASS — live `app.js?v=101` / `dashboard.js?v=81` / `styles.css?v=78` → `public, max-age=31536000, immutable`; HTML `no-cache` |
 | Console | PASS — 0 app errors across Home/Wall/Sources/Suggested/dialogs/sidebar/cinema; only external YouTube CDN failures |
 | Preset fills | PASS — News 4, Always 6, Cartoons 2, Sports 6, Esports 4, Creators 9, Comedy 6, Learning 6; Demo 9→9, 6→6 |
 | Random wall | PASS — API/Home/X produce 4/6/9 tiles, unique URLs, real names; layout matches |

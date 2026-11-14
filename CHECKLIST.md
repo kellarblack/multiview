@@ -171,4 +171,5 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 164 | Idle-settle tilt | DONE | Hero eases home after 1.1s; chrome hides at 3.5s with 300ms ease |
 | 165 | Live scores | DONE | /api/scores worker, six leagues, cached strip, ESPN links |
 | 166 | Cleaner hero | DONE | Removed dot grid + gradient headline; quieter glow |
+| 167 | Score strip refinement | DONE | Live/final first, max four pre, CFB/EPL labels, compact cards |
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.9.44 — 2026-11-14
+
+### Changed
+
+- Scores strip is quieter and more useful: live and final games first, then at most
+  four upcoming games. Short league labels (CFB/EPL), time-only pre-game status,
+  compact cards. New cache key `multiview.scores.v2`.
+
+### Notes
+
+- Build `6f4643f599` is live. Client 59/0/2 (61 checks), bundle 77/77, live
+  100/100.
+
+
 ## 1.9.43 — 2026-11-14
 
 ### Added

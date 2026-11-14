@@ -171,15 +171,15 @@ window.MVDash = (function () {
     { label: 'NFL', path: 'football/nfl' },
     { label: 'MLB', path: 'baseball/mlb' },
     { label: 'NHL', path: 'hockey/nhl' },
-    { label: 'Premier League', path: 'soccer/eng.1' },
-    { label: 'College football', path: 'football/college-football' },
+    { label: 'EPL', path: 'soccer/eng.1' },
+    { label: 'CFB', path: 'football/college-football' },
   ];
   var scoreTimer = 0;
   var scoreRequest = 0;
 
   function scoreCacheRead() {
     try {
-      var raw = sessionStorage.getItem('multiview.scores.v1');
+      var raw = sessionStorage.getItem('multiview.scores.v2');
       if (!raw) return null;
       var parsed = JSON.parse(raw);
       if (!parsed || Date.now() - parsed.at > 90000) return null;
@@ -188,7 +188,7 @@ window.MVDash = (function () {
   }
 
   function scoreCacheWrite(games) {
-    try { sessionStorage.setItem('multiview.scores.v1', JSON.stringify({ at: Date.now(), games: games })); } catch (e) { /* ignore */ }
+    try { sessionStorage.setItem('multiview.scores.v2', JSON.stringify({ at: Date.now(), games: games })); } catch (e) { /* ignore */ }
   }
 
   function scoreTime(value) {
@@ -239,12 +239,14 @@ window.MVDash = (function () {
 
   function scoreCard(game) {
     var live = game.state === 'in';
+    var detail = game.detail;
+    if (game.state === 'pre' && game.date) detail = scoreTime(game.date) || detail;
     var awayScore = game.state === 'pre' ? '' : String(game.away.score || '');
     var homeScore = game.state === 'pre' ? '' : String(game.home.score || '');
     var statusClass = live ? ' is-live' : (game.state === 'post' ? ' is-final' : ' is-pre');
-    var label = game.league + ' ' + game.away.name + ' at ' + game.home.name + ' ' + game.detail;
+    var label = game.league + ' ' + game.away.name + ' at ' + game.home.name + ' ' + detail;
     return '<a class="score-card" href="' + esc(game.link) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(label) + '">' +
-      '<span class="score-top"><span>' + esc(game.league) + '</span><span class="score-state' + statusClass + '">' + (live ? '<i></i>' : '') + esc(game.detail) + '</span></span>' +
+      '<span class="score-top"><span>' + esc(game.league) + '</span><span class="score-state' + statusClass + '">' + (live ? '<i></i>' : '') + esc(detail) + '</span></span>' +
       '<span class="score-team' + (game.away.winner ? ' is-winner' : '') + '"><span>' + esc(game.away.abbr || game.away.name) + '</span><b>' + esc(awayScore) + '</b></span>' +
       '<span class="score-team' + (game.home.winner ? ' is-winner' : '') + '"><span>' + esc(game.home.abbr || game.home.name) + '</span><b>' + esc(homeScore) + '</b></span>' +
     '</a>';
@@ -258,7 +260,10 @@ window.MVDash = (function () {
     var row = section.querySelector('.scores-row');
     var note = section.querySelector('.scores-note');
     if (row) row.innerHTML = games.map(scoreCard).join('');
-    if (note) note.textContent = liveCount(games) + ' live · updated ' + (games.length ? 'just now' : '');
+    if (note) {
+      var done = games.filter(function (g) { return g.state === 'post'; }).length;
+      note.textContent = (liveCount(games) ? liveCount(games) + ' live' : (done ? 'final' : 'today')) + ' · updated just now';
+    }
   }
 
   function liveCount(games) {
@@ -267,12 +272,18 @@ window.MVDash = (function () {
 
   function finishScores(host, games) {
     games.sort(function (a, b) {
-      var rank = { in: 0, pre: 1, post: 2 };
+      var rank = { in: 0, post: 1, pre: 2 };
       return (rank[a.state] || 3) - (rank[b.state] || 3) || String(a.date).localeCompare(String(b.date));
     });
-    games = games.slice(0, 8);
-    scoreCacheWrite(games);
-    renderScores(host, games);
+    var live = games.filter(function (g) { return g.state === 'in'; });
+    var done = games.filter(function (g) { return g.state === 'post'; });
+    var pre = games.filter(function (g) { return g.state === 'pre'; });
+    var shown = live.concat(done);
+    if (shown.length < 4) shown = shown.concat(pre.slice(0, 4 - shown.length));
+    if (!shown.length) shown = pre.slice(0, 4);
+    shown = shown.slice(0, 6);
+    scoreCacheWrite(shown);
+    renderScores(host, shown);
   }
 
   function loadDirectScores(host, seq) {
