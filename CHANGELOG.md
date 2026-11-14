@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.9.49 — 2026-11-14
+
+### Changed
+
+- **Help page tidy-up:** `legal & privacy` and `status` are separate buttons in the
+  quick-action row instead of one link plus a dangling `·`, so the row wraps
+  cleanly on a phone and `status` no longer sits alone on its own line.
+- The help headline's blue phrase is a softer blue-white instead of the full
+  accent, matching the calmer Home headline.
+
+### Notes
+
+- Build `4b708d9d65`. Bundle 77/77. No horizontal overflow at 390 px.
+
+
 ## 1.9.48 — 2026-11-14
 
 ### Changed
