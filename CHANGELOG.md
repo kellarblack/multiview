@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.9.38 — 2026-11-14
+
+### Changed
+
+- **TV-style tile boot.** Tiles now arrive in a 55 ms stagger with a small
+  scale/fade, a soft sheen and a single top-to-bottom tuning scan. It reads like a
+  TV screen waking up, then stops. No persistent scanlines, no blocked input.
+- Kept it compositor-only (transform/opacity) and under a second for four tiles.
+
+### Notes
+
+- Build `6ef85a4a04` is live. Client 59/0/2 (61 checks), bundle 77/77, live
+  100/100.
+
+
 ## 1.9.37 — 2026-11-12
 
 ### Fixed

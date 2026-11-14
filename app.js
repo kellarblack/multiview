@@ -1194,6 +1194,7 @@
         <div class="tile-poster" aria-hidden="true"></div>
         <div class="tile-boot" aria-hidden="true"><span class="tile-boot-name"></span></div>
         <div class="tile-shield" aria-hidden="true"></div>
+        <span class="tile-tune" aria-hidden="true"></span>
         <iframe loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-presentation allow-orientation-lock allow-storage-access-by-user-activation"
           allow="autoplay; fullscreen; encrypted-media; picture-in-picture; clipboard-write; screen-wake-lock"
           referrerpolicy="no-referrer-when-downgrade" title=""></iframe>

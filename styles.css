@@ -454,15 +454,15 @@ a.more-item { text-decoration: none; }
 }
 
 /* Entrance runs once, when the tile is created — never again on view switches
-   or focus changes. Opacity on the frame, scale on the body: compositor-only. */
+   or focus changes. Transform + opacity only, so a four-tile wall stays cheap. */
 .tile.is-entering {
-  animation: tile-fade .34s var(--ease-out) backwards;
-  animation-delay: calc(var(--enter, 0) * 36ms);
+  animation: tile-fade .46s var(--ease-out) backwards;
+  animation-delay: calc(var(--enter, 0) * 55ms);
 }
 
 @keyframes tile-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: scale(.982); }
+  to { opacity: 1; transform: none; }
 }
 
 /* Optional source header — off by default, toggled from Source info → View or T */
@@ -518,12 +518,12 @@ body.show-headers .tile-ui { top: 35px; }
 .tile.is-flipping { will-change: transform; z-index: 2; }
 
 .tile.is-entering .tile-body {
-  animation: body-settle .72s var(--ease-out) backwards;
-  animation-delay: calc(var(--enter, 0) * 36ms);
+  animation: body-settle .58s var(--ease-out) backwards;
+  animation-delay: calc(var(--enter, 0) * 55ms);
 }
 
 @keyframes body-settle {
-  from { opacity: .3; transform: scale(1.018); }
+  from { opacity: .28; transform: scale(1.012); }
   to { opacity: 1; transform: none; }
 }
 
@@ -536,8 +536,8 @@ body.show-headers .tile-ui { top: 35px; }
   pointer-events: none;
   opacity: 0;
   background: linear-gradient(104deg, transparent 42%, rgba(255, 255, 255, .075) 50%, transparent 58%);
-  animation: tile-sheen .58s var(--ease-out) both;
-  animation-delay: calc(var(--enter, 0) * 36ms + 60ms);
+  animation: tile-sheen .52s var(--ease-out) both;
+  animation-delay: calc(var(--enter, 0) * 55ms + 50ms);
 }
 
 @keyframes tile-sheen {
@@ -693,6 +693,28 @@ body.is-dragging-tile { cursor: grabbing; }
   filter: blur(24px) saturate(1.15) brightness(.52);
   transform: scale(1.14);
   pointer-events: none;
+}
+
+.tile-tune {
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  top: -18%;
+  height: 18%;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(160, 205, 255, .16) 62%, rgba(235, 246, 255, .62) 100%);
+  filter: blur(.3px);
+}
+.tile.is-entering .tile-tune {
+  animation: tune-sweep .62s cubic-bezier(.22, .61, .36, 1) both;
+  animation-delay: calc(var(--enter, 0) * 55ms);
+}
+@keyframes tune-sweep {
+  0% { opacity: 0; transform: translateY(0); }
+  12% { opacity: .9; }
+  100% { opacity: 0; transform: translateY(720%); }
 }
 
 .tile-poster {
