@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.9.40 — 2026-11-14
+
+### Changed
+
+- **Walls arrive from small to full.** Opening a preset, sport, demo or random wall
+  now scales the grid from 93.5% to 100% with a 460 ms fade, while the tiles keep
+  their own 55 ms stagger and tuning scan. It feels like a screen waking up, not a
+  hard swap.
+
+### Notes
+
+- Build `ad7a6691ef` is live. Client 59/0/2 (61 checks), bundle 77/77, live
+  100/100.
+
+
 ## 1.9.39 — 2026-11-14
 
 ### Changed

@@ -166,4 +166,5 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 159 | Public GitHub + Actions | DONE | Repo public, secrets set, deploy/CI green, source links live |
 | 160 | Walls CTA cache fix | DONE | styles v70; unstyled CTA fixed |
 | 161 | TV tile boot | DONE | 55ms stagger, scale/fade, sheen + tuning scan, compositor-only |
+| 162 | Wall scale-in | DONE | Preset/sport/demo/random walls scale .935 → 1 with 460ms fade |
 

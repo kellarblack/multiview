@@ -2,7 +2,7 @@
 
 ## Live now
 
-**Cloudflare Pages** · project **`multiview-cc`** · live build `6471794993` (deployed 2026-11-14)
+**Cloudflare Pages** · project **`multiview-cc`** · live build `ad7a6691ef` (deployed 2026-11-14)
 (Home is the default landing).
 
 - **https://multiview.cc** — canonical, HTTPS 200, HSTS, CSP and cache headers.

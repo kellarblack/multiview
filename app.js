@@ -4113,6 +4113,7 @@
     save();
     render();
     showView('wall');
+    bootWall();
     toast(`${sport.name} first — ${view.tiles.length} sports feeds.`);
     return true;
   }
@@ -4127,6 +4128,18 @@
     try { win.opener = null; } catch (e) { /* ignore */ }
     toast(`${name || 'Site'} — sign in with your own account. We never see it.`);
     return true;
+  }
+
+  let wallBootTimer = 0;
+  /* A preset or demo should arrive like a screen, not snap into place. */
+  function bootWall() {
+    const grid = $('#grid');
+    if (!grid || !activeView().tiles.length) return;
+    clearTimeout(wallBootTimer);
+    grid.classList.remove('is-wall-booting');
+    void grid.offsetWidth;
+    grid.classList.add('is-wall-booting');
+    wallBootTimer = setTimeout(() => grid.classList.remove('is-wall-booting'), 520);
   }
 
   function setupDemo(count) {
@@ -4146,6 +4159,7 @@
     save();
     render();
     showView('wall');
+    bootWall();
     return demo.tiles.length === wanted;
   }
 
@@ -4174,6 +4188,7 @@
     save();
     render();
     showView('wall');
+    bootWall();
     toast(preset.name + ' — ' + view.tiles.length + ' streams.');
     return true;
   }
@@ -4206,6 +4221,7 @@
     save();
     render();
     showView('wall');
+    bootWall();
     toast(`Random multiview — ${view.tiles.length} streams.`);
     return view.tiles.length === wanted;
   }

@@ -438,6 +438,17 @@ a.more-item { text-decoration: none; }
 .grid.is-focus .tile:not(.is-focused) { display: none; }
 .grid.is-focus .tile.is-focused { grid-column: 1 / -1; }
 
+/* A preset wall arrives from slightly small to full, like a screen waking. */
+.grid.is-wall-booting {
+  animation: wall-boot .46s cubic-bezier(.16, 1, .3, 1) both;
+  transform-origin: 50% 44%;
+  will-change: transform, opacity;
+}
+@keyframes wall-boot {
+  from { opacity: 0; transform: scale(.935); }
+  to { opacity: 1; transform: none; }
+}
+
 /* ── tile ───────────────────────────────────────────────────── */
 .tile {
   position: relative;
