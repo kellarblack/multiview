@@ -141,6 +141,16 @@ window.MVDash = (function () {
       .catch(function () {
         document.querySelectorAll('[data-status="chip"]').forEach(function (el) { el.textContent = 'status'; });
       });
+
+    /* The same history the status page draws, squeezed into the chip. */
+    var barsHost = document.querySelector('[data-uptime-bars]');
+    if (barsHost && window.multiviewUptime) {
+      window.multiviewUptime.load().then(function (runs) {
+        window.multiviewUptime.paint(barsHost, runs);
+        var chip = barsHost.parentNode;
+        if (chip && chip.classList) chip.classList.add('has-bars');
+      }).catch(function () { /* the chip still works without history */ });
+    }
   }
 
   /* A missing channel logo hides itself. This replaces an inline onerror so the

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-14T14:01:54+00:00",
+  "generated": "2026-11-14T19:35:39+00:00",
   "site": "https://multiview.cc",
   "checked": 86,
   "ok": 86,
@@ -8,5 +8,8 @@
   "thumbs_ok": 61,
   "thumbs_bad": 0,
   "items": [],
-  "bad_thumbs": []
+  "bad_thumbs": [],
+  "pages_checked": 6,
+  "pages_ok": 6,
+  "pages": []
 }

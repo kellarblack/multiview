@@ -1,5 +1,33 @@
 # Changelog
 
+## 1.9.50 — 2026-11-14
+
+### Added
+
+- **Uptime as a small thing, not a page.** The header chip now carries a nine-bar
+  sparkline (`uptime.js`) next to “all up”, and on a phone it collapses to a
+  six-bar mini graph instead of a bare dot. It links to `/status` when you want
+  the detail.
+- `uptime.json` is the history: one point per day with ok/total, written by
+  `tools/health-check.py --site`, which now also fetches the six live pages.
+  Backfilled from the real `health.json` commits (12 and 14 Nov).
+
+### Changed
+
+- The health workflow runs **daily** instead of weekly, so a dead feed is caught
+  the same day and the graph fills in faster. One step now checks pages, feeds and
+  thumbnails and commits `health.json` + `uptime.json`.
+- `/status` was rebuilt as a compact page: one graph, four numbers (pages, links,
+  thumbnails, build), the failing list, and a short note on what is checked. No
+  hero, no gradient glow, no marketing copy.
+- `/status` says what is true — a cron job, real requests, failures kept in the
+  record rather than hidden.
+
+### Notes
+
+- Build `748b6ae2c9`. Client 59/0/2 (61 checks), bundle 77/77.
+
+
 ## 1.9.49 — 2026-11-14
 
 ### Changed

@@ -2,7 +2,7 @@
 """Check the public feeds the curated walls use, and write health.json.
 
     python3 tools/health-check.py
-    python3 tools/health-check.py --out health.json
+    python3 tools/health-check.py --out health.json --uptime uptime.json --site
 
 No third-party packages. YouTube watch links are checked with oEmbed; channel
 and playlist links are checked with a normal HTTP request. Meant for a scheduled
@@ -97,9 +97,51 @@ def check_thumb(video_id):
     return {"id": video_id, "status": last or "missing", "ok": False}
 
 
+SITE_PATHS = ("/", "/tv", "/help", "/status", "/BUILD.txt", "/health.json")
+
+
+def check_site(base):
+    """Fetch the same pages the scheduled Action checks, with redirects."""
+    base = base.rstrip("/")
+    results = []
+    for path in SITE_PATHS:
+        url = base + path
+        try:
+            req = urllib.request.Request(url, method="GET", headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=12) as response:
+                results.append({"url": url, "status": response.status, "ok": 200 <= response.status < 400})
+        except urllib.error.HTTPError as error:
+            results.append({"url": url, "status": error.code, "ok": False})
+        except Exception as error:  # noqa: BLE001
+            results.append({"url": url, "status": type(error).__name__, "ok": False})
+    return results
+
+
+def merge_uptime(path, entry, keep=20):
+    """One point per day. A re-run on the same day replaces that day."""
+    runs = []
+    try:
+        with open(path, encoding="utf-8") as handle:
+            previous = json.load(handle)
+        runs = [run for run in previous.get("runs", []) if isinstance(run, dict) and run.get("d")]
+    except Exception:  # noqa: BLE001
+        runs = []
+    runs = [run for run in runs if run.get("d") != entry["d"]]
+    runs.append(entry)
+    runs.sort(key=lambda run: run["d"])
+    runs = runs[-keep:]
+    with open(path, "w", encoding="utf-8") as handle:
+        json.dump({"updated": entry["checked"], "runs": runs}, handle, indent=2, ensure_ascii=False)
+        handle.write("\n")
+    return runs
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", default="health.json")
+    parser.add_argument("--uptime", default="uptime.json", help="daily history behind the status graph")
+    parser.add_argument("--site", action="store_true", help="also fetch the live pages and record them")
+    parser.add_argument("--site-base", default="https://multiview.cc")
     args = parser.parse_args(argv)
 
     feed_urls = urls()
@@ -120,12 +162,36 @@ def main(argv=None):
         "items": bad[:40],
         "bad_thumbs": bad_thumbs[:40],
     }
+    site = check_site(args.site_base) if args.site else []
+    site_bad = [item for item in site if not item["ok"]]
+    if site:
+        payload["pages_checked"] = len(site)
+        payload["pages_ok"] = len(site) - len(site_bad)
+        payload["pages"] = site_bad[:40]
+
     out = args.out if __import__("os").path.isabs(args.out) else __import__("os").path.join(ROOT, args.out)
     with open(out, "w", encoding="utf-8") as handle:
         json.dump(payload, handle, indent=2, ensure_ascii=False)
         handle.write("\n")
-    print("%d links · %d ok · %d bad · %d thumbs · %d thumb bad · %s" % (len(items), len(items) - len(bad), len(bad), len(thumbs), len(bad_thumbs), out))
-    return 0 if not bad and not bad_thumbs else 1
+
+    total = len(items) + len(thumbs) + len(site)
+    good = total - len(bad) - len(bad_thumbs) - len(site_bad)
+    entry = {
+        "d": dt.datetime.now(dt.timezone.utc).date().isoformat(),
+        "checked": payload["generated"],
+        "ok": good,
+        "total": total,
+        "pages": len(site) - len(site_bad),
+        "links": len(items) - len(bad),
+        "thumbs": len(thumbs) - len(bad_thumbs),
+    }
+    uptime_path = args.uptime if __import__("os").path.isabs(args.uptime) else __import__("os").path.join(ROOT, args.uptime)
+    runs = merge_uptime(uptime_path, entry)
+
+    print("%d links · %d ok · %d bad · %d thumbs · %d thumb bad · %d pages · %d page bad"
+          % (len(items), len(items) - len(bad), len(bad), len(thumbs), len(bad_thumbs), len(site), len(site_bad)))
+    print("%d/%d checks ok · %d day%s in %s" % (good, total, len(runs), "" if len(runs) == 1 else "s", uptime_path))
+    return 0 if not bad and not bad_thumbs and not site_bad else 1
 
 
 if __name__ == "__main__":

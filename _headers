@@ -72,6 +72,9 @@
 /health.json
   Cache-Control: no-cache
 
+/uptime.json
+  Cache-Control: no-cache
+
 /404.html
   Cache-Control: no-cache
 
@@ -96,7 +99,7 @@
   Content-Disposition: attachment; filename="multiview-beta.zip"
   X-Robots-Tag: noindex
 
-# Versioned in the URL (?v=80, ?v=85, ?v=101) — safe to cache for a day.
+# Versioned in the URL (?v=81, ?v=86, ?v=101) — safe to cache for a day.
 # Explicit paths rather than *.css / *.js: Cloudflare Pages and Netlify both match
 # these reliably, and every file is listed anyway.
 /styles.css
@@ -113,6 +116,9 @@
 
 /sync.js
   Cache-Control: public, max-age=86400
+
+/uptime.js
+  Cache-Control: public, max-age=31536000, immutable
 
 /vendor/hls.min.js
   Cache-Control: public, max-age=31536000, immutable

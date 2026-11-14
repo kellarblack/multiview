@@ -36,7 +36,7 @@
 <link rel="dns-prefetch" href="//player.twitch.tv">
 <link rel="preload" as="image" href="media/multiview-demo-poster.jpg?v=6" fetchpriority="high">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="styles.css?v=80">
+<link rel="stylesheet" href="styles.css?v=81">
 </head>
 <body>
 
@@ -105,6 +105,7 @@
   </div>
   <a class="status-chip" href="status.html" title="Feed status" aria-label="Feed status">
     <span class="dot" data-status-dot aria-hidden="true"></span>
+    <span class="status-bars" data-uptime-bars aria-hidden="true"></span>
     <span data-status="chip">feeds</span>
   </a>
   <button class="plan-chip" data-act="plan" title="Free during beta — see plans">
@@ -550,7 +551,8 @@
 <main class="view-suggested" id="suggestedView" hidden></main>
 
 <script src="sources.js?v=3"></script>
-<script src="dashboard.js?v=85"></script>
+<script src="uptime.js?v=1" defer></script>
+<script src="dashboard.js?v=86"></script>
 <script src="app.js?v=101"></script>
 </body>
 </html>

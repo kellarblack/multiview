@@ -1,8 +1,8 @@
-name: weekly uptime and feed health
+name: daily uptime and feed health
 
 on:
   schedule:
-    - cron: '17 9 * * 1'
+    - cron: '17 9 * * *'
   workflow_dispatch:
   push:
     paths:
@@ -21,24 +21,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Check the live site
+      - name: Check the live pages and the curated feeds
+        run: python3 tools/health-check.py --out health.json --uptime uptime.json --site
+      - name: Publish health.json and the uptime history
         run: |
-          set -e
-          for path in / /tv /help /status /BUILD.txt /health.json; do
-            code=$(curl -L -s -o /dev/null -w '%{http_code}' "https://multiview.cc$path")
-            echo "$path $code"
-            test "$code" = "200"
-          done
-      - name: Check curated feeds
-        run: python3 tools/health-check.py --out health.json
-      - name: Publish health.json
-        run: |
-          if git diff --quiet health.json; then
+          if git diff --quiet health.json uptime.json; then
             echo "health unchanged"
             exit 0
           fi
           git config user.name "multiview health"
           git config user.email "health@multiview.cc"
-          git add health.json
+          git add health.json uptime.json
           git commit -m "health: $(date -u +%FT%TZ)"
           git push
