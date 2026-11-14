@@ -178,4 +178,6 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 171 | Help quick row | DONE | Separate legal/status buttons; softer headline accent |
 | 172 | Uptime sparkline | DONE | Chip graph + mobile mini graph, uptime.js, uptime.json history |
 | 173 | Status page slimmed | DONE | One graph, four numbers, failing list; daily checks |
+| 174 | The board | DONE | Live + one final + upcoming with lines; spread/total from ESPN odds; even grid |
+| 175 | Sport-native naming | DONE | “the board” / “the slate”; plainer hero copy |
 

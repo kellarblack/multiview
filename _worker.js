@@ -90,10 +90,15 @@ function scoreGame(league, event) {
   const away = teams.find((t) => !t.home) || teams[0] || {};
   const home = teams.find((t) => t.home) || teams[1] || {};
   const type = ((comp.status || event.status || {}).type) || {};
+  const odds = (comp.odds || [])[0] || {};
+  const total = Number(odds.overUnder);
   return {
     league: league.label,
     state: type.state || 'pre',
     detail: type.shortDetail || type.detail || '',
+    line: odds.details ? String(odds.details) : '',
+    total: Number.isFinite(total) && total > 0 ? total : 0,
+    book: (odds.provider && odds.provider.displayName) || '',
     away,
     home,
     link: scoreLink(event),
@@ -123,7 +128,7 @@ async function handleScores(request) {
   }
   const rank = { in: 0, post: 1, pre: 2 };
   games.sort((a, b) => (rank[a.state] || 3) - (rank[b.state] || 3) || String(a.date).localeCompare(String(b.date)));
-  const response = json({ generated: new Date().toISOString(), games: games.slice(0, 16) }, 200, 60);
+  const response = json({ generated: new Date().toISOString(), games: games.slice(0, 24) }, 200, 60);
   await cache.put(request, response.clone());
   return response;
 }

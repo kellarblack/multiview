@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.9.52 — 2026-11-14
+
+### Added
+
+- **The board.** The score strip is now a betting-board strip: live games, one
+  final, then the next games that actually carry a line. Each of those shows the
+  spread and total from ESPN's odds feed (`wpg -162 · o6.5`, `den -12.5 · o235.5`)
+  and the note names the book (“3 live · draft kings lines”) from the provider
+  field rather than a hard-coded name.
+- Every card keeps the line row once any card has one, so the strip is an even
+  grid instead of ragged cards.
+
+### Changed
+
+- Sections now speak the sport, not the SaaS: **the board** (scores + lines) and
+  **the slate** (today's games).
+- Hero is plainer and more specific: “four streams. one screen.” with “paste a
+  link. it plays. no account, no cable box.” and “free in beta · pro $5 once”.
+
+### Notes
+
+- Build `1462720534`. Client 59/0/2 (61 checks), bundle 77/77. Odds only exist
+  pre-game in ESPN's feed, which is why the strip reserves slots for upcoming
+  games.
+
+
 ## 1.9.51 — 2026-11-14
 
 ### Changed

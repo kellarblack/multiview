@@ -189,7 +189,7 @@ window.MVDash = (function () {
 
   function scoreCacheRead() {
     try {
-      var raw = sessionStorage.getItem('multiview.scores.v3');
+      var raw = sessionStorage.getItem('multiview.scores.v7');
       if (!raw) return null;
       var parsed = JSON.parse(raw);
       if (!parsed || Date.now() - parsed.at > 90000) return null;
@@ -198,7 +198,7 @@ window.MVDash = (function () {
   }
 
   function scoreCacheWrite(games) {
-    try { sessionStorage.setItem('multiview.scores.v3', JSON.stringify({ at: Date.now(), games: games })); } catch (e) { /* ignore */ }
+    try { sessionStorage.setItem('multiview.scores.v7', JSON.stringify({ at: Date.now(), games: games })); } catch (e) { /* ignore */ }
   }
 
   function scoreTime(value) {
@@ -236,10 +236,17 @@ window.MVDash = (function () {
     var state = type.state || 'pre';
     var detail = type.shortDetail || type.detail || '';
     if (state === 'pre' && !detail) detail = scoreTime(event.date);
+    var odds = (comp.odds || [])[0] || {};
+    var line = '';
+    if (odds.details) line = String(odds.details);
+    var total = Number(odds.overUnder);
     return {
       league: league.label,
       state: state,
       detail: detail,
+      line: line,
+      book: (odds.provider && odds.provider.displayName) || '',
+      total: isFinite(total) && total > 0 ? total : 0,
       away: away,
       home: home,
       link: scoreLink(event),
@@ -247,18 +254,22 @@ window.MVDash = (function () {
     };
   }
 
-  function scoreCard(game) {
+  function scoreCard(game, withBook) {
     var live = game.state === 'in';
     var detail = game.detail;
     if (game.state === 'pre' && game.date) detail = scoreTime(game.date) || detail;
     var awayScore = game.state === 'pre' ? '' : String(game.away.score || '');
     var homeScore = game.state === 'pre' ? '' : String(game.home.score || '');
     var statusClass = live ? ' is-live' : (game.state === 'post' ? ' is-final' : ' is-pre');
-    var label = game.league + ' ' + game.away.name + ' at ' + game.home.name + ' ' + detail;
+    var book = '';
+    if (game.line) book += '<span>' + esc(game.line) + '</span>';
+    if (game.total) book += '<span>' + (book ? '· ' : '') + 'o' + esc(String(game.total)) + '</span>';
+    var label = game.league + ' ' + game.away.name + ' at ' + game.home.name + ' ' + detail + (game.line ? ' ' + game.line : '');
     return '<a class="score-card" href="' + esc(game.link) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(label) + '">' +
       '<span class="score-top"><span>' + esc(game.league) + '</span><span class="score-state' + statusClass + '">' + (live ? '<i></i>' : '') + esc(detail) + '</span></span>' +
       '<span class="score-team' + (game.away.winner ? ' is-winner' : '') + '"><span>' + esc(game.away.abbr || game.away.name) + '</span><b>' + esc(awayScore) + '</b></span>' +
       '<span class="score-team' + (game.home.winner ? ' is-winner' : '') + '"><span>' + esc(game.home.abbr || game.home.name) + '</span><b>' + esc(homeScore) + '</b></span>' +
+      (withBook ? '<span class="score-book">' + book + '</span>' : '') +
     '</a>';
   }
 
@@ -270,12 +281,15 @@ window.MVDash = (function () {
     var row = section.querySelector('.scores-row');
     var note = section.querySelector('.scores-note');
     if (row) {
-      row.innerHTML = games.map(scoreCard).join('');
+      var anyBook = games.some(function (g) { return g.line || g.total; });
+      row.innerHTML = games.map(function (g) { return scoreCard(g, anyBook); }).join('');
       paintScoreScroll(row);
     }
     if (note) {
       var done = games.filter(function (g) { return g.state === 'post'; }).length;
-      note.textContent = (liveCount(games) ? liveCount(games) + ' live' : (done ? 'final' : 'today')) + ' · updated just now';
+      var booked = games.filter(function (g) { return (g.line || g.total) && g.book; })[0];
+      note.textContent = (liveCount(games) ? liveCount(games) + ' live' : (done ? 'final' : 'today')) +
+        (booked ? ' · ' + String(booked.book).toLowerCase() + ' lines' : '');
     }
   }
 
@@ -297,6 +311,9 @@ window.MVDash = (function () {
       var rank = { in: 0, post: 1, pre: 2 };
       return (rank[a.state] || 3) - (rank[b.state] || 3) || String(a.date).localeCompare(String(b.date));
     });
+    /* A book, not a feed: live first, one or two finals, then the next games
+       that actually carry a line. Two per league so one competition cannot
+       swallow the strip. */
     var shown = [];
     var perLeague = {};
     function take(game) {
@@ -306,15 +323,25 @@ window.MVDash = (function () {
       shown.push(game);
       return true;
     }
-    games.filter(function (g) { return g.state === 'in'; }).forEach(take);
-    games.filter(function (g) { return g.state === 'post'; }).forEach(take);
-    if (shown.length < 4) {
-      games.filter(function (g) { return g.state === 'pre'; }).forEach(function (g) {
-        if (shown.length < 4) take(g);
+    function grab(state, max) {
+      var added = 0;
+      games.forEach(function (game) {
+        if (added >= max || shown.length >= 6) return;
+        if (game.state !== state) return;
+        if (take(game)) added++;
       });
     }
-    if (!shown.length) {
-      games.filter(function (g) { return g.state === 'pre'; }).slice(0, 4).forEach(take);
+    grab('in', 3);
+    grab('post', 1);
+    games.forEach(function (game) {
+      if (shown.length >= 6 || game.state !== 'pre' || !(game.line || game.total)) return;
+      take(game);
+    });
+    if (shown.length < 4) {
+      games.forEach(function (game) {
+        if (shown.length >= 4 || game.state !== 'pre') return;
+        take(game);
+      });
     }
     shown = shown.slice(0, 6);
     scoreCacheWrite(shown);
@@ -416,8 +443,8 @@ window.MVDash = (function () {
       '<div class="home">' +
         '<section class="home-hero">' +
           '<div class="home-copy">' +
-            '<h1>up to <span class="grad">4 streams</span>.<br>one screen.</h1>' +
-            '<p class="home-sub">paste a link. it plays.</p>' +
+            '<h1>four streams.<br>one screen.</h1>' +
+            '<p class="home-sub">paste a link. it plays. no account, no cable box.</p>' +
             '<div class="hero-paste">' +
               '<input id="heroUrl" type="text" spellcheck="false" autocomplete="off" aria-label="Paste a link" placeholder="paste a youtube, twitch, iptv or web link">' +
               '<button class="btn primary" id="heroAdd">add</button>' +
@@ -429,14 +456,14 @@ window.MVDash = (function () {
                 ? '<button class="btn ghost" data-act="already-downloaded">running offline</button>'
                 : '<a class="btn ghost" href="multiview-beta.zip?v=dev" download>download</a>') +
             '</div>' +
-            '<p class="home-fine">free in beta · no account · <button class="link-btn" data-act="plan">plans</button></p>' +
+            '<p class="home-fine">free in beta · pro $5 once · <button class="link-btn" data-act="plan">plans</button></p>' +
           '</div>' +
           '<div class="home-visual">' + heroFilm() + '</div>' +
         '</section>' +
 
         '<section class="home-scores" hidden>' +
           '<div class="home-head">' +
-            '<h2>scores</h2>' +
+            '<h2>the board</h2>' +
             '<span class="scores-note">checking…</span>' +
           '</div>' +
           '<div class="scores-row" role="list"></div>' +
@@ -444,7 +471,7 @@ window.MVDash = (function () {
 
         '<section class="home-sports">' +
           '<div class="home-head">' +
-            '<h2>live sport</h2>' +
+            '<h2>the slate</h2>' +
             '<button class="link-btn" data-act="preset-sports">all sports →</button>' +
           '</div>' +
           '<div class="sport-grid">' +

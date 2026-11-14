@@ -4131,8 +4131,8 @@ body[data-view="wall"] .plan-chip { display: none; }
 .scores-row::-webkit-scrollbar { display: none; }
 .score-card {
   flex: 0 0 158px;
-  min-height: 68px;
-  padding: 8px 10px;
+  min-height: 88px;
+  padding: 9px 10px 8px;
   border: .5px solid var(--line);
   border-radius: 10px;
   background: rgba(255, 255, 255, .018);
@@ -4165,6 +4165,22 @@ body[data-view="wall"] .plan-chip { display: none; }
 }
 .score-team b { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; color: #eef3fb; }
 .score-team.is-winner span, .score-team.is-winner b { color: #fff; font-weight: 650; }
+.score-book {
+  display: flex;
+  justify-content: flex-start;
+  gap: 4px;
+  min-height: 12px;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: .5px solid rgba(255, 255, 255, .05);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 9.5px;
+  letter-spacing: .02em;
+  color: #77828f;
+  font-variant-numeric: tabular-nums;
+  text-transform: lowercase;
+}
+.score-card:hover .score-book { color: #8f9cae; }
 @media (max-width: 560px) {
   .home-scores { margin-top: 28px; }
   .score-card { flex-basis: 156px; }
