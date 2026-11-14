@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.9.53 — 2026-11-14
+
+### Changed
+
+- The board's note now names the state that leads: “3 live”, “5 upcoming” or
+  “final”, so a board full of pre-game lines no longer reads as final.
+
+### Notes
+
+- Build `ac44022337`. Client 59/0/2 (61 checks), bundle 77/77.
+
+
 ## 1.9.52 — 2026-11-14
 
 ### Added

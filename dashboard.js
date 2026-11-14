@@ -287,8 +287,10 @@ window.MVDash = (function () {
     }
     if (note) {
       var done = games.filter(function (g) { return g.state === 'post'; }).length;
+      var pre = games.filter(function (g) { return g.state === 'pre'; }).length;
       var booked = games.filter(function (g) { return (g.line || g.total) && g.book; })[0];
-      note.textContent = (liveCount(games) ? liveCount(games) + ' live' : (done ? 'final' : 'today')) +
+      var lead = liveCount(games) ? liveCount(games) + ' live' : (pre ? pre + ' upcoming' : (done ? 'final' : 'today'));
+      note.textContent = lead +
         (booked ? ' · ' + String(booked.book).toLowerCase() + ' lines' : '');
     }
   }
