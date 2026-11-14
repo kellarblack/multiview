@@ -96,7 +96,7 @@
   Content-Disposition: attachment; filename="multiview-beta.zip"
   X-Robots-Tag: noindex
 
-# Versioned in the URL (?v=78, ?v=81, ?v=101) — safe to cache for a day.
+# Versioned in the URL (?v=79, ?v=82, ?v=101) — safe to cache for a day.
 # Explicit paths rather than *.css / *.js: Cloudflare Pages and Netlify both match
 # these reliably, and every file is listed anyway.
 /styles.css

@@ -172,4 +172,5 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 165 | Live scores | DONE | /api/scores worker, six leagues, cached strip, ESPN links |
 | 166 | Cleaner hero | DONE | Removed dot grid + gradient headline; quieter glow |
 | 167 | Score strip refinement | DONE | Live/final first, max four pre, CFB/EPL labels, compact cards |
+| 168 | Score variety | DONE | Max 2 games per league; worker returns 16; edge fade on row |
 

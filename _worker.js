@@ -123,7 +123,7 @@ async function handleScores(request) {
   }
   const rank = { in: 0, post: 1, pre: 2 };
   games.sort((a, b) => (rank[a.state] || 3) - (rank[b.state] || 3) || String(a.date).localeCompare(String(b.date)));
-  const response = json({ generated: new Date().toISOString(), games: games.slice(0, 8) }, 200, 60);
+  const response = json({ generated: new Date().toISOString(), games: games.slice(0, 16) }, 200, 60);
   await cache.put(request, response.clone());
   return response;
 }

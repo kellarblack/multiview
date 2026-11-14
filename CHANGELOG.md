@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.9.45 — 2026-11-14
+
+### Changed
+
+- Score strip now caps each league at two games, so a busy Premier League
+  afternoon no longer pushes every other sport off the strip. The Worker returns
+  up to 16 games so the client has variety to choose from.
+- The score row fades at its right edge to show it scrolls.
+
+### Notes
+
+- Build `1b40a723e9`. Client 59/0/2 (61 checks), bundle 77/77.
+
+
 ## 1.9.44 — 2026-11-14
 
 ### Changed

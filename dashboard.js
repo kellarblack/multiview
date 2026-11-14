@@ -275,12 +275,25 @@ window.MVDash = (function () {
       var rank = { in: 0, post: 1, pre: 2 };
       return (rank[a.state] || 3) - (rank[b.state] || 3) || String(a.date).localeCompare(String(b.date));
     });
-    var live = games.filter(function (g) { return g.state === 'in'; });
-    var done = games.filter(function (g) { return g.state === 'post'; });
-    var pre = games.filter(function (g) { return g.state === 'pre'; });
-    var shown = live.concat(done);
-    if (shown.length < 4) shown = shown.concat(pre.slice(0, 4 - shown.length));
-    if (!shown.length) shown = pre.slice(0, 4);
+    var shown = [];
+    var perLeague = {};
+    function take(game) {
+      var n = perLeague[game.league] || 0;
+      if (n >= 2) return false;
+      perLeague[game.league] = n + 1;
+      shown.push(game);
+      return true;
+    }
+    games.filter(function (g) { return g.state === 'in'; }).forEach(take);
+    games.filter(function (g) { return g.state === 'post'; }).forEach(take);
+    if (shown.length < 4) {
+      games.filter(function (g) { return g.state === 'pre'; }).forEach(function (g) {
+        if (shown.length < 4) take(g);
+      });
+    }
+    if (!shown.length) {
+      games.filter(function (g) { return g.state === 'pre'; }).slice(0, 4).forEach(take);
+    }
     shown = shown.slice(0, 6);
     scoreCacheWrite(shown);
     renderScores(host, shown);
