@@ -166,6 +166,163 @@ window.MVDash = (function () {
 
   /* ── HOME ──────────────────────────────────────────────────── */
 
+  var SCORE_LEAGUES = [
+    { label: 'NBA', path: 'basketball/nba' },
+    { label: 'NFL', path: 'football/nfl' },
+    { label: 'MLB', path: 'baseball/mlb' },
+    { label: 'NHL', path: 'hockey/nhl' },
+    { label: 'Premier League', path: 'soccer/eng.1' },
+    { label: 'College football', path: 'football/college-football' },
+  ];
+  var scoreTimer = 0;
+  var scoreRequest = 0;
+
+  function scoreCacheRead() {
+    try {
+      var raw = sessionStorage.getItem('multiview.scores.v1');
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || Date.now() - parsed.at > 90000) return null;
+      return parsed.games;
+    } catch (e) { return null; }
+  }
+
+  function scoreCacheWrite(games) {
+    try { sessionStorage.setItem('multiview.scores.v1', JSON.stringify({ at: Date.now(), games: games })); } catch (e) { /* ignore */ }
+  }
+
+  function scoreTime(value) {
+    var d = new Date(value);
+    if (isNaN(d.getTime())) return '';
+    try {
+      return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    } catch (e) { return ''; }
+  }
+
+  function scoreLink(event) {
+    var links = event.links || [];
+    for (var i = 0; i < links.length; i++) {
+      var href = links[i] && links[i].href;
+      if (href && /^https:\/\/www\.espn\.com\//.test(href)) return href;
+    }
+    return 'https://www.espn.com/';
+  }
+
+  function scoreGame(league, event) {
+    var comp = (event.competitions || [])[0] || {};
+    var teams = (comp.competitors || []).map(function (c) {
+      return {
+        home: c.homeAway === 'home',
+        name: (c.team && (c.team.shortDisplayName || c.team.displayName || c.team.name)) || '',
+        abbr: (c.team && c.team.abbreviation) || '',
+        score: c.score || '',
+        winner: !!c.winner,
+      };
+    });
+    var away = teams.filter(function (t) { return !t.home; })[0] || teams[0] || {};
+    var home = teams.filter(function (t) { return t.home; })[0] || teams[1] || {};
+    var status = (comp.status || event.status || {});
+    var type = status.type || {};
+    var state = type.state || 'pre';
+    var detail = type.shortDetail || type.detail || '';
+    if (state === 'pre' && !detail) detail = scoreTime(event.date);
+    return {
+      league: league.label,
+      state: state,
+      detail: detail,
+      away: away,
+      home: home,
+      link: scoreLink(event),
+      date: event.date || '',
+    };
+  }
+
+  function scoreCard(game) {
+    var live = game.state === 'in';
+    var awayScore = game.state === 'pre' ? '' : String(game.away.score || '');
+    var homeScore = game.state === 'pre' ? '' : String(game.home.score || '');
+    var statusClass = live ? ' is-live' : (game.state === 'post' ? ' is-final' : ' is-pre');
+    var label = game.league + ' ' + game.away.name + ' at ' + game.home.name + ' ' + game.detail;
+    return '<a class="score-card" href="' + esc(game.link) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(label) + '">' +
+      '<span class="score-top"><span>' + esc(game.league) + '</span><span class="score-state' + statusClass + '">' + (live ? '<i></i>' : '') + esc(game.detail) + '</span></span>' +
+      '<span class="score-team' + (game.away.winner ? ' is-winner' : '') + '"><span>' + esc(game.away.abbr || game.away.name) + '</span><b>' + esc(awayScore) + '</b></span>' +
+      '<span class="score-team' + (game.home.winner ? ' is-winner' : '') + '"><span>' + esc(game.home.abbr || game.home.name) + '</span><b>' + esc(homeScore) + '</b></span>' +
+    '</a>';
+  }
+
+  function renderScores(host, games) {
+    var section = host.querySelector('.home-scores');
+    if (!section) return;
+    if (!games.length) { section.hidden = true; return; }
+    section.hidden = false;
+    var row = section.querySelector('.scores-row');
+    var note = section.querySelector('.scores-note');
+    if (row) row.innerHTML = games.map(scoreCard).join('');
+    if (note) note.textContent = liveCount(games) + ' live · updated ' + (games.length ? 'just now' : '');
+  }
+
+  function liveCount(games) {
+    return games.filter(function (g) { return g.state === 'in'; }).length;
+  }
+
+  function finishScores(host, games) {
+    games.sort(function (a, b) {
+      var rank = { in: 0, pre: 1, post: 2 };
+      return (rank[a.state] || 3) - (rank[b.state] || 3) || String(a.date).localeCompare(String(b.date));
+    });
+    games = games.slice(0, 8);
+    scoreCacheWrite(games);
+    renderScores(host, games);
+  }
+
+  function loadDirectScores(host, seq) {
+    var controller = ('AbortController' in window) ? new AbortController() : null;
+    var timer = setTimeout(function () { if (controller) controller.abort(); }, 5000);
+    Promise.allSettled(SCORE_LEAGUES.map(function (league) {
+      return fetch('https://site.api.espn.com/apis/site/v2/sports/' + league.path + '/scoreboard', {
+        cache: 'no-store',
+        signal: controller ? controller.signal : undefined,
+      }).then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json().then(function (data) { return { league: league, data: data }; });
+      });
+    })).then(function (results) {
+      clearTimeout(timer);
+      if (seq !== scoreRequest) return;
+      var games = [];
+      results.forEach(function (entry) {
+        if (entry.status !== 'fulfilled' || !entry.value) return;
+        var events = (entry.value.data && entry.value.data.events) || [];
+        events.forEach(function (event) {
+          var game = scoreGame(entry.value.league, event);
+          if (game.away.abbr || game.home.abbr) games.push(game);
+        });
+      });
+      finishScores(host, games);
+    }).catch(function () {
+      clearTimeout(timer);
+    });
+  }
+
+  function loadScores(host) {
+    var section = host.querySelector('.home-scores');
+    if (!section) return;
+    var cached = scoreCacheRead();
+    if (cached) { renderScores(host, cached); return; }
+    var seq = ++scoreRequest;
+    /* One edge request on the live site; direct ESPN is the local fallback. */
+    fetch('/api/scores', { cache: 'no-store' })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) {
+        if (seq !== scoreRequest) return;
+        if (data && Array.isArray(data.games)) { finishScores(host, data.games); return; }
+        loadDirectScores(host, seq);
+      })
+      .catch(function () {
+        if (seq === scoreRequest) loadDirectScores(host, seq);
+      });
+  }
+
   function revealHome(host) {
     if (homeRevealObserver) { homeRevealObserver.disconnect(); homeRevealObserver = null; }
     var calm = false;
@@ -231,6 +388,14 @@ window.MVDash = (function () {
           '<div class="home-visual">' + heroFilm() + '</div>' +
         '</section>' +
 
+        '<section class="home-scores" hidden>' +
+          '<div class="home-head">' +
+            '<h2>scores</h2>' +
+            '<span class="scores-note">checking…</span>' +
+          '</div>' +
+          '<div class="scores-row" role="list"></div>' +
+        '</section>' +
+
         '<section class="home-sports">' +
           '<div class="home-head">' +
             '<h2>live sport</h2>' +
@@ -255,7 +420,7 @@ window.MVDash = (function () {
           '<button class="walls-cta" data-act="all-walls">' +
             '<span class="walls-cta-copy">' +
               '<b>ready-made walls</b>' +
-              '<span>' + presets.length + ' starting points — football, news, toons, tech, science and more.</span>' +
+              '<span>' + presets.length + ' walls — sport, news, toons, tech, science.</span>' +
             '</span>' +
             '<span class="walls-cta-go">browse →</span>' +
           '</button>' +
@@ -337,6 +502,11 @@ window.MVDash = (function () {
     }, 300000);
     paintHealthAge();
     revealHome(host);
+    loadScores(host);
+    if (scoreTimer) clearInterval(scoreTimer);
+    scoreTimer = setInterval(function () {
+      if (document.body.dataset.view === 'home') loadScores(host);
+    }, 90000);
 
     /* When the Pages Function is live, use its cached live frame. On a static
        direct upload the endpoint is 404 and the normal frame stays. */

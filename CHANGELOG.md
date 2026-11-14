@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.9.43 — 2026-11-14
+
+### Added
+
+- **Live scores strip.** Home now shows today's NBA, NFL, MLB, NHL, Premier
+  League and college football games: live scores first, then upcoming, then
+  finals. It uses one cached `/api/scores` call through the Pages Worker; the
+  client falls back to direct ESPN scoreboards on a static build.
+- Each card links to the ESPN game page.
+
+### Changed
+
+- **Cleaner hero:** removed the dot grid and the gradient headline; the film glow
+  is quieter. The ready-made copy is now “15 walls — sport, news, toons, tech,
+  science.”
+
+### Notes
+
+- Build `949767d884` is live. Client 59/0/2 (61 checks), bundle 77/77, live
+  100/100.
+
+
 ## 1.9.42 — 2026-11-14
 
 ### Changed

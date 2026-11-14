@@ -61,6 +61,73 @@ async function handleLive(request) {
   return response;
 }
 
+const SCORE_LEAGUES = [
+  { label: 'NBA', path: 'basketball/nba' },
+  { label: 'NFL', path: 'football/nfl' },
+  { label: 'MLB', path: 'baseball/mlb' },
+  { label: 'NHL', path: 'hockey/nhl' },
+  { label: 'Premier League', path: 'soccer/eng.1' },
+  { label: 'College football', path: 'football/college-football' },
+];
+
+function scoreLink(event) {
+  const links = event.links || [];
+  for (const link of links) {
+    if (link && /^https:\/\/www\.espn\.com\//.test(link.href || '')) return link.href;
+  }
+  return 'https://www.espn.com/';
+}
+
+function scoreGame(league, event) {
+  const comp = (event.competitions || [])[0] || {};
+  const teams = (comp.competitors || []).map((c) => ({
+    home: c.homeAway === 'home',
+    name: (c.team && (c.team.shortDisplayName || c.team.displayName || c.team.name)) || '',
+    abbr: (c.team && c.team.abbreviation) || '',
+    score: c.score || '',
+    winner: !!c.winner,
+  }));
+  const away = teams.find((t) => !t.home) || teams[0] || {};
+  const home = teams.find((t) => t.home) || teams[1] || {};
+  const type = ((comp.status || event.status || {}).type) || {};
+  return {
+    league: league.label,
+    state: type.state || 'pre',
+    detail: type.shortDetail || type.detail || '',
+    away,
+    home,
+    link: scoreLink(event),
+    date: event.date || '',
+  };
+}
+
+async function handleScores(request) {
+  const cache = caches.default;
+  const cached = await cache.match(request);
+  if (cached) return cached;
+  const results = await Promise.allSettled(SCORE_LEAGUES.map(async (league) => {
+    const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/' + league.path + '/scoreboard', {
+      headers: { 'user-agent': UA, 'accept': 'application/json' },
+      signal: AbortSignal.timeout ? AbortSignal.timeout(4500) : undefined,
+    });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    return { league, data: await response.json() };
+  }));
+  const games = [];
+  for (const result of results) {
+    if (result.status !== 'fulfilled' || !result.value) continue;
+    for (const event of (result.value.data.events || [])) {
+      const game = scoreGame(result.value.league, event);
+      if (game.away.abbr || game.home.abbr) games.push(game);
+    }
+  }
+  const rank = { in: 0, pre: 1, post: 2 };
+  games.sort((a, b) => (rank[a.state] || 3) - (rank[b.state] || 3) || String(a.date).localeCompare(String(b.date)));
+  const response = json({ generated: new Date().toISOString(), games: games.slice(0, 8) }, 200, 60);
+  await cache.put(request, response.clone());
+  return response;
+}
+
 async function handleFrame(request) {
   const cache = caches.default;
   const cached = await cache.match(request);
@@ -112,6 +179,7 @@ export default {
     if (url.pathname === '/api/live') return handleLive(request);
     if (url.pathname === '/api/frame') return handleFrame(request);
     if (url.pathname === '/api/error') return handleError(request);
+    if (url.pathname === '/api/scores') return handleScores(request);
     if (url.pathname.startsWith('/api/')) return new Response('not found', { status: 404 });
     if (env && env.ASSETS) return env.ASSETS.fetch(request);
     return new Response('not found', { status: 404 });
