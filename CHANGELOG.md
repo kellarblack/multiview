@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.9.48 — 2026-11-14
+
+### Changed
+
+- **Repo link removed from the site.** No github link in the Home footer, the
+  Help footer or the Help FAQ. The source is still public; it is just found
+  through the author's profile rather than advertised on every page. The FAQ
+  answer keeps the "no hidden backend" point in plain text.
+
+### Notes
+
+- Build `f69e80e3c4`. Client 59/0/2 (61 checks), bundle 77/77. No repo URL
+  remains in `dist/`.
+
+
 ## 1.9.47 — 2026-11-14
 
 ### Changed

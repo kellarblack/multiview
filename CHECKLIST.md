@@ -174,4 +174,5 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 167 | Score strip refinement | DONE | Live/final first, max four pre, CFB/EPL labels, compact cards |
 | 168 | Score variety | DONE | Max 2 games per league; worker returns 16; edge fade on row |
 | 169 | Score cache + fade | DONE | v3 key so the cap applies; fade only when the row overflows |
+| 170 | No repo link on site | DONE | Home + Help footers and FAQ link removed; source is public via profile |
 
