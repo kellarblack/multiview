@@ -167,4 +167,5 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 160 | Walls CTA cache fix | DONE | styles v70; unstyled CTA fixed |
 | 161 | TV tile boot | DONE | 55ms stagger, scale/fade, sheen + tuning scan, compositor-only |
 | 162 | Wall scale-in | DONE | Preset/sport/demo/random walls scale .935 → 1 with 460ms fade |
+| 163 | Premium polish | DONE | Section reveal, easing token, restrained hovers, `all up` chip |
 

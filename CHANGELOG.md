@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.9.41 — 2026-11-14
+
+### Changed
+
+- **Premium polish pass.** Sections below the hero fade up 10px on first view
+  (once, with a 900ms safety fallback), motion uses a single premium easing token,
+  card hover zoom is restrained, and the walls CTA arrow eases forward.
+- **Uptime chip now says `all up`** instead of `86/86 up`; exact numbers stay in
+  the tooltip and footer/status page. Less dashboard, more product.
+- Wall boot and tile stagger now share the same easing curve.
+
+### Notes
+
+- Build `044353df56` is live. Client 59/0/2 (61 checks), bundle 77/77, live
+  100/100.
+
+
 ## 1.9.40 — 2026-11-14
 
 ### Changed

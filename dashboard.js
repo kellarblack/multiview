@@ -11,6 +11,7 @@ window.MVDash = (function () {
   var ROW = 52;
   var filmObserver = null;
   var homeFrameTimer = 0;
+  var homeRevealObserver = null;
   var healthGenerated = '';
 
   var iptv = { guide: null, guideNote: '', guideLoading: false, filter: '', group: '', favOnly: false, list: [], viewport: null };
@@ -126,8 +127,8 @@ window.MVDash = (function () {
         healthGenerated = h.generated || '';
         paintHealthAge();
         var bad = Number(h.bad) || 0;
-        var chip = bad ? bad + ' down' : (h.ok + '/' + h.checked + ' up');
-        var foot = bad ? bad + ' feed' + (bad === 1 ? '' : 's') + ' down' : h.ok + '/' + h.checked + ' feeds up';
+        var chip = bad ? bad + ' down' : 'all up';
+        var foot = bad ? bad + ' feed' + (bad === 1 ? '' : 's') + ' down' : 'all feeds up';
         document.querySelectorAll('[data-status="chip"],[data-status="foot"]').forEach(function (el) {
           el.textContent = el.getAttribute('data-status') === 'chip' ? chip : foot;
         });
@@ -164,6 +165,31 @@ window.MVDash = (function () {
   }, true);
 
   /* ── HOME ──────────────────────────────────────────────────── */
+
+  function revealHome(host) {
+    if (homeRevealObserver) { homeRevealObserver.disconnect(); homeRevealObserver = null; }
+    var calm = false;
+    try { calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* allow */ }
+    if (calm || !('IntersectionObserver' in window)) return;
+    var sections = Array.prototype.slice.call(host.querySelectorAll('.home > section'))
+      .filter(function (el) { return !el.classList.contains('home-hero'); });
+    sections.forEach(function (el, i) {
+      el.classList.add('home-reveal');
+      el.style.transitionDelay = Math.min(i * 45, 180) + 'ms';
+    });
+    homeRevealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-revealed');
+        homeRevealObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
+    sections.forEach(function (el) { homeRevealObserver.observe(el); });
+    /* Never leave a section invisible if the observer is throttled. */
+    setTimeout(function () {
+      sections.forEach(function (el) { el.classList.add('is-revealed'); });
+    }, 900);
+  }
 
   function renderHome() {
     var host = document.getElementById('homeView');
@@ -310,6 +336,7 @@ window.MVDash = (function () {
       });
     }, 300000);
     paintHealthAge();
+    revealHome(host);
 
     /* When the Pages Function is live, use its cached live frame. On a static
        direct upload the endpoint is 404 and the normal frame stays. */
