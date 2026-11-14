@@ -704,7 +704,7 @@ body.is-dragging-tile { cursor: grabbing; }
   z-index: 4;
   pointer-events: none;
   opacity: 0;
-  background: linear-gradient(180deg, transparent 0%, rgba(160, 205, 255, .16) 62%, rgba(235, 246, 255, .62) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(160, 205, 255, .24) 58%, rgba(240, 248, 255, .88) 100%);
   filter: blur(.3px);
 }
 .tile.is-entering .tile-tune {
@@ -713,7 +713,8 @@ body.is-dragging-tile { cursor: grabbing; }
 }
 @keyframes tune-sweep {
   0% { opacity: 0; transform: translateY(0); }
-  12% { opacity: .9; }
+  10% { opacity: .9; }
+  62% { opacity: .5; }
   100% { opacity: 0; transform: translateY(720%); }
 }
 

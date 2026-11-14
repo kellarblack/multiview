@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.9.39 — 2026-11-14
+
+### Changed
+
+- The tuning scan is brighter and holds opacity through the middle of the sweep,
+  so the TV-style tile boot is visible on bright thumbnails instead of washing out.
+
+### Notes
+
+- Build `6471794993` is live. Client 59/0/2 (61 checks), bundle 77/77, live
+  100/100.
+
+
 ## 1.9.38 — 2026-11-14
 
 ### Changed
