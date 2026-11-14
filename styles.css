@@ -85,7 +85,7 @@ button { cursor: pointer; }
   border-bottom: 1px solid rgba(255, 255, 255, .05);
   position: relative;
   z-index: 30;
-  transition: height .24s var(--ease-out), opacity .18s var(--ease), border-color .2s;
+  transition: height .3s var(--ease-premium), opacity .28s var(--ease-premium), border-color .3s var(--ease-premium);
 }
 
 /* auto-hide: collapse the chrome without clipping the More menu */
@@ -370,7 +370,7 @@ a.more-item { text-decoration: none; }
   padding: 8px 10px;
   position: relative;
   z-index: 20;
-  transition: max-height .24s var(--ease-out), padding .24s var(--ease-out), opacity .18s var(--ease);
+  transition: max-height .3s var(--ease-premium), padding .3s var(--ease-premium), opacity .28s var(--ease-premium);
 }
 
 .paste-field {

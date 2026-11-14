@@ -2581,7 +2581,7 @@
       toast('TV mode off.');
     }
   }
-  const AUTO_HIDE_MS = 5000;
+  const AUTO_HIDE_MS = 3500;
   let chromeTimer = 0;
 
   function updateAutoHideButton() {
@@ -2632,7 +2632,7 @@
     save();
     updateAutoHideButton();
     showChrome();
-    toast(state.autoHide ? 'Controls hide after 5 seconds of inactivity.' : 'Controls stay visible.');
+    toast(state.autoHide ? 'Controls hide after a few seconds of inactivity.' : 'Controls stay visible.');
   }
 
   /* ── channels sidebar ──────────────────────────────────────── */

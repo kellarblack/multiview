@@ -450,11 +450,17 @@ window.MVDash = (function () {
         host._tiltWired = true;
         var tiltRender = null;
         var tx = 0, ty = 0, cx = 0, cy = 0, tiltRaf = 0;
+        var tiltIdle = 0, tiltReturning = false;
         var tickTilt = function () {
           tiltRaf = 0;
           if (!tiltRender) return;
-          cx += (tx - cx) * 0.14;
-          cy += (ty - cy) * 0.14;
+          /* Moving follows at 0.14; after the cursor rests, glide home at 0.055. */
+          var ease = tiltReturning ? 0.055 : 0.14;
+          cx += (tx - cx) * ease;
+          cy += (ty - cy) * ease;
+          if (Math.abs(tx - cx) < 0.002 && Math.abs(ty - cy) < 0.002) {
+            cx = tx; cy = ty; tiltReturning = false;
+          }
           tiltRender.style.setProperty('--ry', (cx * -6).toFixed(2) + 'deg');
           tiltRender.style.setProperty('--rx', (cy * 5).toFixed(2) + 'deg');
           tiltRender.style.setProperty('--mx', (cx * 8).toFixed(2) + 'px');
@@ -463,13 +469,25 @@ window.MVDash = (function () {
             tiltRaf = requestAnimationFrame(tickTilt);
           }
         };
+        var scheduleTiltIdle = function () {
+          clearTimeout(tiltIdle);
+          tiltIdle = setTimeout(function () {
+            tiltReturning = true;
+            tx = 0; ty = 0;
+            if (!tiltRaf) tiltRaf = requestAnimationFrame(tickTilt);
+          }, 1100);
+        };
         host.addEventListener('pointermove', function (e) {
           if (e.pointerType === 'touch') return;
           var el = e.target && e.target.closest ? e.target.closest('.hero-film') : null;
           if (!el) {
+            clearTimeout(tiltIdle);
+            tiltReturning = false;
             tx = 0; ty = 0;
           } else {
             tiltRender = el;
+            tiltReturning = false;
+            scheduleTiltIdle();
             var r = el.getBoundingClientRect();
             if (!r.width || !r.height) { tx = 0; ty = 0; }
             else {
@@ -480,6 +498,8 @@ window.MVDash = (function () {
           if (!tiltRaf) tiltRaf = requestAnimationFrame(tickTilt);
         }, { passive: true });
         host.addEventListener('pointerleave', function () {
+          clearTimeout(tiltIdle);
+          tiltReturning = false;
           tx = 0; ty = 0;
           if (!tiltRaf) tiltRaf = requestAnimationFrame(tickTilt);
         }, { passive: true });

@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.9.42 — 2026-11-14
+
+### Changed
+
+- **The hero tile now drifts home when you stop moving.** After 1.1 s of a still
+  cursor it eases back to flat at a slower rate; any movement picks the follow up
+  again. It feels like YouTube’s idle controls, not a frozen tilt.
+- **Chrome hides after 3.5 s** instead of 5, with a 300 ms premium ease on the
+  top bar and paste bar.
+
+### Notes
+
+- Build `2f4364fea6` is live. Client 59/0/2 (61 checks), bundle 77/77, live
+  100/100.
+
+
 ## 1.9.41 — 2026-11-14
 
 ### Changed
