@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.9.56 — 2026-11-15
+
+### Fixed
+
+- The Worker's 24-game window was filling up with finished games, so the board
+  could show only three cards. It now sorts live → upcoming → final, which keeps
+  the games that carry lines.
+
+### Notes
+
+- Build `80ec0504d8`. Bundle 77/77.
+
+
 ## 1.9.55 — 2026-11-15
 
 ### Fixed

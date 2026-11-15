@@ -126,7 +126,8 @@ async function handleScores(request) {
       if (game.away.abbr || game.home.abbr) games.push(game);
     }
   }
-  const rank = { in: 0, post: 1, pre: 2 };
+  /* Live first, then upcoming (those carry the lines), then finals. */
+  const rank = { in: 0, pre: 1, post: 2 };
   games.sort((a, b) => (rank[a.state] || 3) - (rank[b.state] || 3) || String(a.date).localeCompare(String(b.date)));
   const response = json({ generated: new Date().toISOString(), games: games.slice(0, 24) }, 200, 60);
   await cache.put(request, response.clone());
