@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.9.54 — 2026-11-15
+
+### Added
+
+- **markets strip.** Under the board, a compact row of Polymarket probabilities:
+  the favourite in the busiest season market per league, with the implied chance
+  and a thin bar, linking straight to the market (`polymarket · implied chance`).
+  Data is Polymarket's public Gamma API, read in the browser, cached for ten
+  minutes; the section hides itself if the feed is unreachable.
+- Placeholder books ("Other", "Team A", zero-volume defaults) are filtered out,
+  so the strip only shows a real traded opinion.
+
+### Why
+
+- For someone who trades Polymarket or Kalshi and streams the games for free, the
+  wall now answers the two questions they actually have: what is on, and what the
+  market thinks — without leaving the wall.
+
+### Notes
+
+- Build `d9c735944b`. Client 59/0/2 (61 checks), bundle 77/77.
+
+
 ## 1.9.53 — 2026-11-14
 
 ### Changed

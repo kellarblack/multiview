@@ -180,4 +180,5 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 173 | Status page slimmed | DONE | One graph, four numbers, failing list; daily checks |
 | 174 | The board | DONE | Live + one final + upcoming with lines; spread/total from ESPN odds; even grid |
 | 175 | Sport-native naming | DONE | “the board” / “the slate”; plainer hero copy |
+| 176 | Polymarket strip | DONE | Implied chance per league, filtered placeholders, links to market |
 

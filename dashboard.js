@@ -308,6 +308,153 @@ window.MVDash = (function () {
     return games.filter(function (g) { return g.state === 'in'; }).length;
   }
 
+  /* ── markets: what polymarket thinks, next to the games ───── */
+  var MARKET_LEAGUES = [
+    { label: 'NBA', tag: 'nba' },
+    { label: 'NFL', tag: 'nfl' },
+    { label: 'NHL', tag: 'nhl' },
+    { label: 'MLB', tag: 'mlb' },
+    { label: 'EPL', tag: 'epl' },
+  ];
+
+  function marketCacheRead() {
+    try {
+      var raw = sessionStorage.getItem('multiview.markets.v4');
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || Date.now() - parsed.at > 600000) return null;
+      return parsed.markets;
+    } catch (e) { return null; }
+  }
+
+  function marketCacheWrite(markets) {
+    try { sessionStorage.setItem('multiview.markets.v4', JSON.stringify({ at: Date.now(), markets: markets })); } catch (e) { /* ignore */ }
+  }
+
+  function marketPrice(market) {
+    var prices = market.outcomePrices;
+    if (typeof prices === 'string') { try { prices = JSON.parse(prices); } catch (e) { prices = null; } }
+    if (!prices || !prices.length) return 0;
+    var yes = parseFloat(prices[0]);
+    return isFinite(yes) ? yes : 0;
+  }
+
+  function marketTitle(event) {
+    var text = String(event.title || '');
+    var parts = text.split(':');
+    if (parts.length > 1) text = parts.slice(1).join(':');
+    text = text.replace(/\b(19|20)\d{2}(-\d{2})?\b/g, ' ');
+    text = text.replace(/\b(nba|nfl|nhl|mlb|epl|premier league|pro football|mls|soccer|ufc)\b/gi, ' ');
+    text = text.replace(/\b(the|of|to|a|an)\b/gi, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+    if (/champion/.test(text)) return 'champion';
+    if (/winner|win\b/.test(text)) return 'winner';
+    if (/playoff|seed|qualify|advance/.test(text)) return 'playoffs';
+    return text.split(' ').slice(0, 3).join(' ');
+  }
+
+  function marketName(market) {
+    var name = String(market.groupItemTitle || market.question || '')
+      .replace(/^(will|will the)\s+/i, '')
+      .replace(/\s+(win|be named|be)\s+.*$/i, '')
+      .replace(/\?$/, '')
+      .trim();
+    return name;
+  }
+
+  /* Placeholder books ("Other", "Team A") sit at a default price with no
+     volume. Drop them so the strip shows a real traded opinion. */
+  function marketGeneric(market) {
+    var name = marketName(market);
+    return !name || /\b(other|field|another team|team [a-z]|none|yes|no)\b/i.test(name);
+  }
+
+  /* Prefer a season-long "champion" market, else the busiest event, then the
+     favourite inside it. That is the one number a markets person expects. */
+  function marketPick(league, events) {
+    if (!events || !events.length) return null;
+    var event = events.filter(function (e) {
+      return /champion|winner/i.test(String(e.slug || '') + ' ' + String(e.title || ''));
+    })[0];
+    if (!event) {
+      event = events.slice().sort(function (a, b) {
+        return (Number(b.volume24hr) || 0) - (Number(a.volume24hr) || 0);
+      })[0];
+    }
+    var all = event.markets || [];
+    var pools = [
+      all.filter(function (m) { return m && !m.closed && !marketGeneric(m) && (Number(m.volume) || 0) >= 500; }),
+      all.filter(function (m) { return m && !m.closed && !marketGeneric(m); }),
+    ];
+    var best = null;
+    for (var p = 0; p < pools.length && !best; p++) {
+      pools[p].forEach(function (market) {
+        if (!market || market.closed) return;
+        var price = marketPrice(market);
+        if (!best || price > best.price) best = { price: price, market: market };
+      });
+      if (best && !best.price) best = null;
+    }
+    if (!best || !best.price) return null;
+    return {
+      league: league.label,
+      market: marketTitle(event),
+      name: marketName(best.market),
+      pct: Math.round(best.price * 1000) / 10,
+      url: 'https://polymarket.com/event/' + String(event.slug || ''),
+    };
+  }
+
+  function marketCard(m) {
+    return '<a class="market-card" href="' + esc(m.url) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(m.market + ': ' + m.name + ' ' + m.pct + ' percent on polymarket') + '">' +
+      '<span class="market-top"><span>' + esc(m.league) + ' · ' + esc(m.market.toLowerCase()) + '</span><b>' + esc(String(m.pct)) + '%</b></span>' +
+      '<span class="market-name">' + esc(m.name) + '</span>' +
+      '<span class="market-bar"><i style="width:' + esc(String(Math.max(2, Math.min(100, m.pct)))) + '%"></i></span>' +
+    '</a>';
+  }
+
+  function renderMarkets(host, markets) {
+    var section = host.querySelector('.home-markets');
+    if (!section) return;
+    if (!markets || !markets.length) { section.hidden = true; return; }
+    section.hidden = false;
+    var row = section.querySelector('.markets-row');
+    if (row) row.innerHTML = markets.map(marketCard).join('');
+    var note = section.querySelector('.markets-note');
+    if (note) note.textContent = 'polymarket · implied chance';
+  }
+
+  function loadMarkets(host) {
+    var section = host.querySelector('.home-markets');
+    if (!section) return;
+    var cached = marketCacheRead();
+    if (cached && cached.length) { renderMarkets(host, cached); return; }
+    var controller = ('AbortController' in window) ? new AbortController() : null;
+    var timer = setTimeout(function () { if (controller) controller.abort(); }, 6000);
+    Promise.allSettled(MARKET_LEAGUES.map(function (league) {
+      return fetch('https://gamma-api.polymarket.com/events?closed=false&limit=12&tag_slug=' + league.tag, {
+        cache: 'no-store',
+        signal: controller ? controller.signal : undefined,
+      }).then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      }).then(function (events) {
+        return marketPick(league, events);
+      });
+    })).then(function (results) {
+      clearTimeout(timer);
+      var markets = [];
+      results.forEach(function (entry) {
+        if (entry.status === 'fulfilled' && entry.value) markets.push(entry.value);
+      });
+      if (!markets.length) { section.hidden = true; return; }
+      marketCacheWrite(markets);
+      renderMarkets(host, markets);
+    }).catch(function () {
+      clearTimeout(timer);
+      section.hidden = true;
+    });
+  }
+
   function finishScores(host, games) {
     games.sort(function (a, b) {
       var rank = { in: 0, post: 1, pre: 2 };
@@ -471,6 +618,14 @@ window.MVDash = (function () {
           '<div class="scores-row" role="list"></div>' +
         '</section>' +
 
+        '<section class="home-markets" hidden>' +
+          '<div class="home-head">' +
+            '<h2>markets</h2>' +
+            '<span class="markets-note">reading polymarket…</span>' +
+          '</div>' +
+          '<div class="markets-row" role="list"></div>' +
+        '</section>' +
+
         '<section class="home-sports">' +
           '<div class="home-head">' +
             '<h2>the slate</h2>' +
@@ -581,6 +736,7 @@ window.MVDash = (function () {
     scoreTimer = setInterval(function () {
       if (document.body.dataset.view === 'home') loadScores(host);
     }, 90000);
+    loadMarkets(host);
 
     /* When the Pages Function is live, use its cached live frame. On a static
        direct upload the endpoint is 404 and the normal frame stays. */
