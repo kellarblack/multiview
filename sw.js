@@ -9,7 +9,7 @@
  * the server is down. Bump CACHE when the shell file list changes.
  */
 
-const CACHE = 'multiview-shell-v55';
+const CACHE = 'multiview-shell-v56';
 
 const SHELL = [
   './',

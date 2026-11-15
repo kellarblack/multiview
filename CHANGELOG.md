@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.9.55 — 2026-11-15
+
+### Fixed
+
+- The board could list the same game twice when the strip had fewer than four
+  games and the fill pass ran. Cards are deduped by identity now.
+
+### Notes
+
+- Build `64b394ef4e`. Client 59/0/2 (61 checks), bundle 77/77.
+
+
 ## 1.9.54 — 2026-11-15
 
 ### Added
