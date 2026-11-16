@@ -493,7 +493,7 @@ window.MVDash = (function () {
   }
 
   function marketCard(m) {
-    return '<a class="market-card" href="' + esc(m.url) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(m.market + ': ' + m.name + ' ' + m.pct + ' percent on polymarket') + '">' +
+    return '<a class="market-cell" href="' + esc(m.url) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(m.market + ': ' + m.name + ' ' + m.pct + ' percent on polymarket') + '">' +
       '<span class="market-top"><span>' + esc(m.league) + ' · ' + esc(m.market.toLowerCase()) + '</span><b>' + esc(String(m.pct)) + '%</b></span>' +
       '<span class="market-name">' + esc(m.name) + '</span>' +
       '<span class="market-bar"><i style="width:' + esc(String(Math.max(2, Math.min(100, m.pct)))) + '%"></i></span>' +
@@ -506,7 +506,8 @@ window.MVDash = (function () {
     if (!markets || !markets.length) { section.hidden = true; return; }
     section.hidden = false;
     var row = section.querySelector('.markets-row');
-    if (row) row.innerHTML = markets.map(marketCard).join('');
+    var ordered = markets.slice().sort(function (a, b) { return b.pct - a.pct; });
+    if (row) row.innerHTML = ordered.map(marketCard).join('');
     var note = section.querySelector('.markets-note');
     if (note) note.textContent = 'polymarket · implied chance';
   }

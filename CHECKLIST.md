@@ -185,4 +185,7 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 178 | Faster nav | DONE | Cached Home DOM, press-state on pointerdown |
 | 179 | Free made explicit | DONE | “everything free” everywhere; $5 demoted to fine print |
 | 180 | Share targets | DONE | X, threads, bluesky, reddit, whatsapp, telegram, facebook, email — words only |
+| 181 | Markets panel | DONE | One panel, hairline columns, sorted by chance |
+| 182 | Section rhythm | DONE | 18px heads, 30px gaps |
+| 183 | Repo rename | DONE | Remote, docs and commit email point at kelllar |
 

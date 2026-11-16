@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.9.59 — 2026-11-16
+
+### Changed
+
+- **Markets rebuilt as one panel.** Five hairline columns in a single bordered
+  strip instead of five floating cards, sorted by implied chance (EPL 76.5% first,
+  MLB 4.5% last). Percentages are mono and right-aligned; the bar is a hairline
+  under each column. Scrolls sideways under 900px.
+- Section heads are 18px instead of 22px and the gaps between Home sections are
+  one value (30px), so the hero stays the loudest thing on the page.
+- The board no longer draws a rule under cards that have no line.
+
+### Repo
+
+- GitHub username renamed to **kelllar**: the git remote, GITHUB.md and the
+  changelog now point at `github.com/kelllar/multiview`. Workflows never hard-coded
+  the owner, so deploy and CI are unaffected.
+
+### Notes
+
+- Build `fda390aa0c`. Client 59/0/2 (61 checks), bundle 77/77.
+
+
 ## 1.9.58 — 2026-11-16
 
 ### Added
@@ -365,7 +388,7 @@
 
 ### Added
 
-- **GitHub is live:** https://github.com/kellarblack/multiview (public).
+- **GitHub is live:** https://github.com/kelllar/multiview (public).
 - `deploy.yml` has deployed successfully with the scoped Cloudflare token; CI
   passes. Secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are set.
 - Home footer and Help now link the public repo instead of “coming soon”.
