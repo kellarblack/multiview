@@ -106,10 +106,96 @@ window.MVDash = (function () {
     API.setSources(next);
   }
 
+  /* ── status dropdown ───────────────────────────────────────── */
+
+  var healthData = null;
+  var popRuns = null;
+  var popBound = false;
+
+  function statusPopNodes() {
+    var pop = document.getElementById('statusPop');
+    if (!pop) return null;
+    return {
+      pop: pop,
+      chip: document.getElementById('statusChip'),
+      pct: pop.querySelector('[data-pop="pct"]'),
+      meta: pop.querySelector('[data-pop="meta"]'),
+      bars: pop.querySelector('[data-uptime-bars-pop]'),
+      pages: pop.querySelector('[data-pop="pages"]'),
+      links: pop.querySelector('[data-pop="links"]'),
+      thumbs: pop.querySelector('[data-pop="thumbs"]'),
+    };
+  }
+
+  function paintStatusPop(runs) {
+    var n = statusPopNodes();
+    if (!n) return;
+    var list = runs || popRuns;
+    if (list && n.bars && window.multiviewUptime) {
+      window.multiviewUptime.paint(n.bars, list);
+      var pct = window.multiviewUptime.uptime(list);
+      if (n.pct) n.pct.textContent = pct === null ? '—' : pct + '%';
+      if (n.meta) {
+        n.meta.textContent = list.length
+          ? list.length + (list.length === 1 ? ' check' : ' checks') + ' · ' + (healthData && healthData.generated ? 'latest ' + ago(Date.parse(healthData.generated)) : 'daily')
+          : 'no checks recorded yet';
+      }
+    }
+    var health = healthData;
+    if (health) {
+      if (n.pages) n.pages.textContent = health.pages_checked
+        ? health.pages_ok + '/' + health.pages_checked
+        : 'up';
+      if (n.links) n.links.textContent = health.ok + '/' + health.checked;
+      if (n.thumbs) n.thumbs.textContent = health.thumbs_ok + '/' + health.thumbs_checked;
+    }
+  }
+
+  function closeStatusPop() {
+    var n = statusPopNodes();
+    if (!n || n.pop.hidden) return;
+    n.pop.hidden = true;
+    if (n.chip) n.chip.setAttribute('aria-expanded', 'false');
+  }
+
+  function openStatusPop() {
+    var n = statusPopNodes();
+    if (!n) return;
+    n.pop.hidden = false;
+    if (n.chip) n.chip.setAttribute('aria-expanded', 'true');
+    paintStatusPop();
+    if (!popRuns && window.multiviewUptime) {
+      window.multiviewUptime.load().then(function (runs) {
+        popRuns = runs;
+        paintStatusPop();
+      }).catch(function () { /* keep the numbers we have */ });
+    }
+  }
+
+  function wireStatusPop() {
+    var n = statusPopNodes();
+    if (!n || popBound) return;
+    popBound = true;
+    n.chip.addEventListener('click', function (event) {
+      event.preventDefault();
+      if (n.pop.hidden) openStatusPop();
+      else closeStatusPop();
+    });
+    document.addEventListener('click', function (event) {
+      if (n.pop.hidden) return;
+      if (event.target.closest && event.target.closest('.status-wrap')) return;
+      closeStatusPop();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeStatusPop();
+    });
+  }
+
   /* ── init ──────────────────────────────────────────────────── */
 
   function init(api) {
     API = api;
+    wireStatusPop();
     var wallsDialog = document.getElementById('wallsDialog');
     if (wallsDialog) {
       wallsDialog.addEventListener('click', function (e) {
@@ -124,7 +210,9 @@ window.MVDash = (function () {
     fetch('health.json', { cache: 'no-cache' })
       .then(function (res) { return res.json(); })
       .then(function (h) {
+        healthData = h;
         healthGenerated = h.generated || '';
+        paintStatusPop();
         paintHealthAge();
         var bad = Number(h.bad) || 0;
         var chip = bad ? bad + ' down' : 'all up';
@@ -574,6 +662,17 @@ window.MVDash = (function () {
   function renderHome() {
     var host = document.getElementById('homeView');
     if (!host) return;
+    /* Coming back from the wall should be instant: keep the built Home and
+       only refresh the parts that move. */
+    if (host.dataset.rendered === '1' && host.querySelector('.home')) {
+      if (API.boards().some(function (b) { return b.tiles > 0; })) {
+        host.querySelectorAll('[data-act="load-demo"]').forEach(function (b) { b.remove(); });
+      }
+      paintHealthAge();
+      loadScores(host);
+      loadMarkets(host);
+      return;
+    }
     var state = API.getState();
     var boards = API.boards();
     var history = API.history();
@@ -589,6 +688,7 @@ window.MVDash = (function () {
     });
     if (featuredSports.length < 3) featuredSports = allSports.slice(0, 3);
 
+    host.dataset.rendered = '1';
     host.innerHTML =
       '<div class="home">' +
         '<section class="home-hero">' +
@@ -606,7 +706,7 @@ window.MVDash = (function () {
                 ? '<button class="btn ghost" data-act="already-downloaded">running offline</button>'
                 : '<a class="btn ghost" href="multiview-beta.zip?v=dev" download>download</a>') +
             '</div>' +
-            '<p class="home-fine">free in beta · pro $5 once · <button class="link-btn" data-act="plan">plans</button></p>' +
+            '<p class="home-fine"><strong>free right now</strong> · everything included · no account <span class="fine-later">· pro $5 once, later</span> <button class="link-btn" data-act="plan">plans</button></p>' +
           '</div>' +
           '<div class="home-visual">' + heroFilm() + '</div>' +
         '</section>' +
@@ -672,10 +772,9 @@ window.MVDash = (function () {
         '</section>' +
 
         '<section class="home-price-line">' +
-          '<p><span class="pill ok"><i></i>free in beta</span>' +
-            'no account, no card <span class="sep">·</span> ' +
-            'pro <strong>$5 one time</strong> after beta <span class="sep">·</span> ' +
-            'the app you download is yours.</p>' +
+          '<p><span class="pill ok"><i></i>everything free</span>' +
+            'every wall, every tile, no account, no card, no trial timer.' +
+            '<span class="price-later">later: pro $5 once · the app you download stays yours.</span></p>' +
           '<button class="link-btn" data-act="plan">plans →</button>' +
         '</section>' +
 
@@ -687,7 +786,7 @@ window.MVDash = (function () {
             '<a class="link-btn" href="legal.html">legal</a>' +
             '<a class="link-btn" href="status.html">status</a>' +
           '</div>' +
-          '<span class="home-footer-note"><span class="dot" data-status-dot></span><span data-status="foot">checking feeds…</span> · <a href="status.html">status</a> · multiview.cc · free in beta</span>' +
+          '<span class="home-footer-note"><span class="dot" data-status-dot></span><span data-status="foot">checking feeds…</span> · <a href="status.html">status</a> · multiview.cc · free right now</span>' +
         '</footer>' +
       '</div>';
 

@@ -181,4 +181,7 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 174 | The board | DONE | Live + one final + upcoming with lines; spread/total from ESPN odds; even grid |
 | 175 | Sport-native naming | DONE | “the board” / “the slate”; plainer hero copy |
 | 176 | Polymarket strip | DONE | Implied chance per league, filtered placeholders, links to market |
+| 177 | Status dropdown | DONE | 20-bar panel under the chip, no navigation, Escape/outside close |
+| 178 | Faster nav | DONE | Cached Home DOM, press-state on pointerdown |
+| 179 | Free made explicit | DONE | “everything free” everywhere; $5 demoted to fine print |
 

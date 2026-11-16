@@ -3718,7 +3718,7 @@
     if (!label) return;
     if (planInfo.mode === 'trial') label.textContent = 'trial · ' + Math.max(0, planInfo.daysLeft) + 'd';
     else if (planInfo.mode === 'locked') label.textContent = 'trial ended';
-    else label.textContent = PLAN.stage === 'beta' ? 'beta · free' : 'pro · $5';
+    else label.textContent = PLAN.stage === 'beta' ? 'everything free' : 'pro · $5';
   }
 
   function refreshPlan() {
@@ -3752,19 +3752,19 @@
       $('[data-plan="copy"]', dialog).textContent = 'your ' + PLAN.trialDays + '-day trial is over. local boards and the ' +
         'downloaded app keep working. pro is ' + PLAN.price + ' ' + PLAN.priceNote + '.';
     } else {
-      $('[data-plan="status"]', dialog).textContent = beta ? 'free beta' : 'pro';
-      $('[data-plan="headline"]', dialog).textContent = beta ? 'free while we\'re in beta.' : 'pro is ' + PLAN.price + ' ' + PLAN.priceNote;
+      $('[data-plan="status"]', dialog).textContent = beta ? 'free right now' : 'pro';
+      $('[data-plan="headline"]', dialog).textContent = beta ? 'everything is free right now.' : 'pro is ' + PLAN.price + ' ' + PLAN.priceNote;
       $('[data-plan="copy"]', dialog).textContent = beta
-        ? 'the app you download is yours to keep. after beta, pro is ' + PLAN.price + ' ' + PLAN.priceNote + '.'
+        ? 'every wall, every tile, the download — all of it. no account, no card, no trial timer. the $5 pro tier is for later; the app you keep is free.'
         : 'accounts, cloud boards, sync and share links. the app you download is free.';
     }
-    $('[data-plan="price"]', dialog).textContent = PLAN.price + ' ' + PLAN.priceNote;
+    $('[data-plan="price"]', dialog).textContent = beta ? PLAN.price + ' · later' : PLAN.price + ' ' + PLAN.priceNote;
     const btn = $('[data-plan="upgrade"]', dialog);
     btn.disabled = !planReady();
     btn.textContent = beta ? 'pro · ' + PLAN.price + ' — coming soon' : (planInfo.mode === 'locked' ? 'get pro · ' + PLAN.price : 'pro · ' + PLAN.price + ' ' + PLAN.priceNote);
     btn.title = planReady() ? 'Open checkout' : 'Billing is not switched on yet';
     $('[data-plan="note"]', dialog).textContent = beta
-      ? 'your downloaded app is yours. pro is the paid part.'
+      ? 'nothing is limited today. pro is the paid tier that comes after beta.'
       : 'pro needs the optional sync backend and stripe keys.';
   }
 
@@ -4423,6 +4423,12 @@
     };
 
     $$('#viewNav [data-view]').forEach((btn) => {
+      /* Highlight on press, not after the view is built, so the nav answers
+         the finger immediately. */
+      btn.addEventListener('pointerdown', () => {
+        $$('#viewNav [data-view]').forEach((b) => b.removeAttribute('aria-current'));
+        btn.setAttribute('aria-current', 'page');
+      });
       btn.addEventListener('click', () => showView(btn.dataset.view));
     });
 

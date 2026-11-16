@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.9.57 — 2026-11-16
+
+### Added
+
+- **Status dropdown.** The uptime chip opens a small panel instead of loading
+  `/status`: 20-bar history, the percentage, pages/links/images from the last
+  check, and a link to the full page if you want it. Closes on Escape or an
+  outside click; without JavaScript the chip still links to `/status`.
+
+### Changed
+
+- **Faster nav.** Home is built once and kept: returning from the wall, sources
+  or discover reuses the DOM and only refreshes scores, markets and the health
+  age. Nav buttons also highlight on `pointerdown`, so the press is acknowledged
+  before the view changes. Measured click cost after the first render: under
+  0.1 ms.
+- **Free is explicit.** “everything free” replaces “free in beta” in the header
+  chip, hero line and pricing line; the hero also reads “free right now ·
+  everything included · no account” with “pro $5 once, later” as fine print.
+  Plan dialog, help FAQ, help pricing tiles and the legal price section all lead
+  with free and demote the $5 to a later line.
+
+### Notes
+
+- Build `10f599aed6`. Client 59/0/2 (61 checks), bundle 77/77.
+
+
 ## 1.9.56 — 2026-11-15
 
 ### Fixed

@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="dark">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https: http:; media-src 'self' data: blob: https: http:; font-src 'self' data:; connect-src 'self' blob: data: https: http:; frame-src 'self' about: https: http:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self'">
 <title>multiview</title>
-<meta name="description" content="up to 4 streams. one screen. paste a link and the wall plays — football, news, whatever. free in beta.">
+<meta name="description" content="four streams. one screen. paste a link and the wall plays — football, news, whatever. free right now, no account.">
 <link rel="canonical" href="https://multiview.cc/">
 <meta name="theme-color" content="#070a10">
 <meta name="mv-build" content="__BUILD_ID__">
@@ -37,7 +37,7 @@
 <link rel="dns-prefetch" href="//player.twitch.tv">
 <link rel="preload" as="image" href="media/multiview-demo-poster.jpg?v=6" fetchpriority="high">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="styles.css?v=84">
+<link rel="stylesheet" href="styles.css?v=85">
 </head>
 <body>
 
@@ -104,14 +104,30 @@
       </div>
     </div>
   </div>
-  <a class="status-chip" href="status.html" title="Feed status" aria-label="Feed status">
-    <span class="dot" data-status-dot aria-hidden="true"></span>
-    <span class="status-bars" data-uptime-bars aria-hidden="true"></span>
-    <span data-status="chip">feeds</span>
-  </a>
+  <div class="status-wrap">
+    <a class="status-chip" id="statusChip" href="status.html" title="Uptime and feed status" aria-label="Uptime and feed status" aria-expanded="false" aria-controls="statusPop">
+      <span class="dot" data-status-dot aria-hidden="true"></span>
+      <span class="status-bars" data-uptime-bars aria-hidden="true"></span>
+      <span data-status="chip">feeds</span>
+    </a>
+    <div class="status-pop" id="statusPop" role="dialog" aria-label="Uptime" hidden>
+      <div class="status-pop-top">
+        <span>uptime</span>
+        <b data-pop="pct">—</b>
+      </div>
+      <div class="uptime-bars status-pop-bars" data-uptime-bars-pop></div>
+      <p class="status-pop-meta" data-pop="meta">reading history…</p>
+      <dl class="status-pop-rows">
+        <div><dt>pages</dt><dd data-pop="pages">—</dd></div>
+        <div><dt>links</dt><dd data-pop="links">—</dd></div>
+        <div><dt>images</dt><dd data-pop="thumbs">—</dd></div>
+      </dl>
+      <a class="status-pop-link" href="status.html">full status page →</a>
+    </div>
+  </div>
   <button class="plan-chip" data-act="plan" title="Free during beta — see plans">
     <span class="dot" aria-hidden="true"></span>
-    <span data-plan="chip">free now</span>
+    <span data-plan="chip">everything free</span>
     <span class="plan-chip-arrow" aria-hidden="true">→</span>
   </button>
 </header>
@@ -313,7 +329,7 @@
   <div class="sheet-head">
     <div>
       <h2 id="planTitle">plan</h2>
-      <p class="sheet-sub">free during beta. after beta, pro is $5 one time. the app you download is yours.</p>
+      <p class="sheet-sub">everything is free right now. the $5 pro tier comes later, and the app you download is yours.</p>
     </div>
     <button class="btn icon" data-close aria-label="Close">
       <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
@@ -321,10 +337,10 @@
   </div>
   <div class="sheet-body">
     <div class="plan-status">
-      <span class="pill ok"><i></i><b data-plan="status">free beta</b></span>
+      <span class="pill ok"><i></i><b data-plan="status">free right now</b></span>
     </div>
-    <h3 class="plan-headline" data-plan="headline">free while we're in beta.</h3>
-    <p class="plan-copy" data-plan="copy">the app you download is yours to keep. pro after beta is $5 one time.</p>
+    <h3 class="plan-headline" data-plan="headline">everything is free right now.</h3>
+    <p class="plan-copy" data-plan="copy">every wall, every tile, the download — all of it. no account, no card, no trial timer. the $5 pro tier is for later; the app you keep is free.</p>
 
     <div class="plan-get">
       <div class="plan-get-row">
@@ -338,7 +354,7 @@
     <div class="plan-pro">
       <div class="plan-pro-head">
         <strong>pro</strong>
-        <span class="plan-price" data-plan="price">$5 one time fee</span>
+        <span class="plan-price" data-plan="price">$5 · later</span>
       </div>
       <ul class="plan-list">
         <li>hosted multiview</li>
@@ -346,7 +362,7 @@
         <li>sync across devices</li>
         <li>share links that stay live</li>
       </ul>
-      <p class="plan-pro-note">the app you download is free. pro is the paid part.</p>
+      <p class="plan-pro-note">later, not now. nothing on this page is limited today.</p>
       <button class="btn primary" data-plan="upgrade" disabled>pro · $5 — coming soon</button>
     </div>
 
@@ -553,7 +569,7 @@
 
 <script src="sources.js?v=3"></script>
 <script src="uptime.js?v=1" defer></script>
-<script src="dashboard.js?v=90"></script>
-<script src="app.js?v=101"></script>
+<script src="dashboard.js?v=91"></script>
+<script src="app.js?v=102"></script>
 </body>
 </html>
