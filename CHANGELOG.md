@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.9.58 — 2026-11-16
+
+### Added
+
+- **Share where people actually are.** The share dialog now lists plain-word
+  targets — X, threads, bluesky, reddit, whatsapp, telegram, facebook, email —
+  next to copy link. Each opens that network's own compose screen with the wall
+  link already filled in; no SDKs, no widgets, no tracking. Pop-up blocked falls
+  back to copying the link.
+
+### Changed
+
+- Share copy is one shared line (“four streams. one screen.”) across the native
+  sheet, the intents and email.
+
+### Notes
+
+- Build `0b4a5eb748`. Client 59/0/2 (61 checks), bundle 77/77. Intent URLs tested
+  in a stubbed harness: 8 buttons, 7 window intents plus mailto.
+
+
 ## 1.9.57 — 2026-11-16
 
 ### Added

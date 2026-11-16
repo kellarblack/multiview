@@ -37,7 +37,7 @@
 <link rel="dns-prefetch" href="//player.twitch.tv">
 <link rel="preload" as="image" href="media/multiview-demo-poster.jpg?v=6" fetchpriority="high">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="styles.css?v=85">
+<link rel="stylesheet" href="styles.css?v=86">
 </head>
 <body>
 
@@ -317,11 +317,21 @@
   </div>
   <div class="sheet-body">
     <div class="share-grid">
-      <button class="btn primary" id="shareThreadsBtn">Threads</button>
-      <button class="btn" id="shareCopyBtn">copy link</button>
+      <button class="btn primary" id="shareCopyBtn">copy link</button>
       <button class="btn ghost" id="shareNativeBtn" hidden>share…</button>
     </div>
-    <p class="share-note">Threads opens a new post with the wall link. You can edit the text before posting.</p>
+    <p class="share-lead">post it:</p>
+    <div class="share-sites" id="shareSites" role="group" aria-label="Post the wall link to">
+      <button type="button" data-share="x">X</button>
+      <button type="button" data-share="threads">threads</button>
+      <button type="button" data-share="bluesky">bluesky</button>
+      <button type="button" data-share="reddit">reddit</button>
+      <button type="button" data-share="whatsapp">whatsapp</button>
+      <button type="button" data-share="telegram">telegram</button>
+      <button type="button" data-share="facebook">facebook</button>
+      <button type="button" data-share="email">email</button>
+    </div>
+    <p class="share-note">each one opens a post with the wall link already in it — edit the words before you send.</p>
   </div>
 </dialog>
 
@@ -570,6 +580,6 @@
 <script src="sources.js?v=3"></script>
 <script src="uptime.js?v=1" defer></script>
 <script src="dashboard.js?v=91"></script>
-<script src="app.js?v=102"></script>
+<script src="app.js?v=103"></script>
 </body>
 </html>

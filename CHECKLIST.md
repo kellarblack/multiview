@@ -184,4 +184,5 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 177 | Status dropdown | DONE | 20-bar panel under the chip, no navigation, Escape/outside close |
 | 178 | Faster nav | DONE | Cached Home DOM, press-state on pointerdown |
 | 179 | Free made explicit | DONE | “everything free” everywhere; $5 demoted to fine print |
+| 180 | Share targets | DONE | X, threads, bluesky, reddit, whatsapp, telegram, facebook, email — words only |
 

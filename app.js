@@ -2500,7 +2500,7 @@
   }
 
   async function copyLink() {
-    const url = location.origin + location.pathname;
+    const url = sharePageUrl();
     try {
       await navigator.clipboard.writeText(url);
       toast('Link copied — send it to someone.');
@@ -2511,24 +2511,48 @@
     }
   }
 
-  function shareText() {
-    return '4 streams. one screen. ' + location.origin + location.pathname;
+  function sharePageUrl() {
+    return location.origin + location.pathname;
   }
 
-  function shareThreads() {
-    const intent = 'https://www.threads.com/intent/post?text=' + encodeURIComponent(shareText());
-    const win = window.open(intent, '_blank', 'noopener,noreferrer,width=640,height=720');
+  const SHARE_LINE = 'four streams. one screen.';
+  const SHARE_TITLE = 'multiview.cc — four streams, one screen';
+
+  /* Each network takes the link a little differently, so each gets its own
+     intent URL. Text only: no SDKs, no widgets, nothing tracked. */
+  const SHARE_NETWORKS = {
+    x: (url, text) => 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url),
+    threads: (url, text) => 'https://www.threads.com/intent/post?text=' + encodeURIComponent(text + ' ' + url),
+    bluesky: (url, text) => 'https://bsky.app/intent/compose?text=' + encodeURIComponent(text + ' ' + url),
+    reddit: (url, text) => 'https://www.reddit.com/submit?url=' + encodeURIComponent(url) + '&title=' + encodeURIComponent(text),
+    whatsapp: (url, text) => 'https://wa.me/?text=' + encodeURIComponent(text + ' ' + url),
+    telegram: (url, text) => 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text),
+    facebook: (url) => 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url),
+  };
+
+  function shareTo(network) {
+    const url = sharePageUrl();
+    if (network === 'email') {
+      const subject = encodeURIComponent(SHARE_TITLE);
+      const body = encodeURIComponent(SHARE_LINE + '\n' + url + '\n\nfree right now, no account.');
+      location.href = 'mailto:?subject=' + subject + '&body=' + body;
+      return true;
+    }
+    const build = SHARE_NETWORKS[network];
+    if (!build) return false;
+    const win = window.open(build(url, SHARE_LINE), '_blank', 'noopener,noreferrer,width=680,height=760');
     if (!win) {
       copyLink();
       toast('Pop-up blocked — link copied instead.', 'warn');
+      return false;
     }
+    return true;
   }
 
   async function shareNative() {
-    const url = location.origin + location.pathname;
     if (!navigator.share) return copyLink();
     try {
-      await navigator.share({ title: 'multiview.cc', text: '4 streams. one screen.', url });
+      await navigator.share({ title: 'multiview.cc', text: SHARE_LINE, url: sharePageUrl() });
       const dialog = $('#shareDialog');
       if (dialog && dialog.open) dialog.close();
       return true;
@@ -3516,8 +3540,13 @@
     $('#menuBlankBtn').addEventListener('click', () => openBlankWall());
     $('#tvModeBtn').addEventListener('click', () => setTvMode(!tvMode));
     $('#menuShareBtn').addEventListener('click', () => openShare());
-    const shareThreadsBtn = $('#shareThreadsBtn');
-    if (shareThreadsBtn) shareThreadsBtn.addEventListener('click', shareThreads);
+    const shareSites = $('#shareSites');
+    if (shareSites) {
+      shareSites.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-share]');
+        if (btn) shareTo(btn.dataset.share);
+      });
+    }
     const shareCopyBtn = $('#shareCopyBtn');
     if (shareCopyBtn) shareCopyBtn.addEventListener('click', () => { copyLink(); });
     const shareNativeBtn = $('#shareNativeBtn');
