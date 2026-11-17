@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.9.61 — 2026-11-16
+
+### Fixed
+
+- **Stale shell risk.** The unversioned `/app.js` sat in the edge cache as
+  `immutable` for a year (measured: `cf-cache-status: HIT`, age ~42 h), which is one
+  way an old interface can keep showing up after a deploy. Scripts and styles now
+  cache for 10 minutes instead of a year; the `?v=` query still busts repeat visits.
+- The service worker now precaches the **versioned** files from `index.html` — the
+  build stamps `./app.js?v=…` into `dist/sw.js` — so its offline shell can never
+  store an old edge copy. Cache name bumped to `multiview-shell-v61`.
+
+### Notes
+
+- Build `14a863ced4`. Client 59/0/2 (61 checks), bundle 77/77.
+
+
 ## 1.9.60 — 2026-11-16
 
 ### Fixed

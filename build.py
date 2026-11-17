@@ -271,6 +271,19 @@ def main(argv=None):
         total += len(data)
         written.append(name)
 
+    # The service worker precaches the shell. Give it the versioned URLs from
+    # index.html so it can never store a stale edge copy of app.js or the styles.
+    sw_path = os.path.join(out, "sw.js")
+    index_path = os.path.join(out, "index.html")
+    if os.path.isfile(sw_path) and os.path.isfile(index_path):
+        index_text = open(index_path, encoding="utf-8").read()
+        versions = dict(re.findall(r"(styles\.css|app\.js|dashboard\.js|sources\.js|uptime\.js)\?v=(\d+)", index_text))
+        if versions:
+            sw_text = open(sw_path, encoding="utf-8").read()
+            for asset, version in versions.items():
+                sw_text = sw_text.replace("'./%s'" % asset, "'./%s?v=%s'" % (asset, version))
+            open(sw_path, "w", encoding="utf-8").write(sw_text)
+
     # /tv is a real page, not a redirect: Cloudflare Pages and Vercel serve
     # tv.html at /tv with the URL intact, and app.js turns TV mode on.
     tv_src = os.path.join(out, "index.html")

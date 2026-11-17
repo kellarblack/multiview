@@ -1,4 +1,4 @@
-# Test report — multiview.cc 1.9.60
+# Test report — multiview.cc 1.9.61
 
 Date: 2026-11-10
 Environment: macOS 26.6.2 · Google Chrome 156.0.8078.80 · Python 3.9.6
