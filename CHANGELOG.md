@@ -14,7 +14,7 @@
 
 ### Notes
 
-- Build `14a863ced4`. Client 59/0/2 (61 checks), bundle 77/77.
+- Build `72d35e642a`. Client 59/0/2 (61 checks), bundle 77/77.
 
 
 ## 1.9.60 — 2026-11-16

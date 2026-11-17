@@ -99,20 +99,22 @@
   Content-Disposition: attachment; filename="multiview-beta.zip"
   X-Robots-Tag: noindex
 
-# Versioned in the URL (?v=87, ?v=93, ?v=104) — safe to cache for a day.
-# Explicit paths rather than *.css / *.js: Cloudflare Pages and Netlify both match
-# these reliably, and every file is listed anyway.
+# Versioned in the URL (?v=87, ?v=93, ?v=104). Ten minutes, not a year: the query
+# string already busts repeat visits, and a short TTL keeps an unversioned path
+# from pinning an old copy in an edge cache after a deploy.
+# Explicit paths rather than *.css / *.js: Cloudflare Pages and Netlify match these
+# reliably, and every file is listed anyway.
 /styles.css
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=600
 
 /app.js
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=600
 
 /dashboard.js
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=600
 
 /sources.js
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=600
 
 /sync.js
   Cache-Control: public, max-age=86400
