@@ -99,11 +99,10 @@
   Content-Disposition: attachment; filename="multiview-beta.zip"
   X-Robots-Tag: noindex
 
-# Versioned in the URL (?v=87, ?v=93, ?v=104). Ten minutes, not a year: the query
-# string already busts repeat visits, and a short TTL keeps an unversioned path
-# from pinning an old copy in an edge cache after a deploy.
-# Explicit paths rather than *.css / *.js: Cloudflare Pages and Netlify match these
-# reliably, and every file is listed anyway.
+# Scripts and styles are versioned in the URL (?v=88, ?v=94, ?v=105), and that
+# version string is what guarantees a fresh copy: Cloudflare Pages serves its own
+# asset TTL for js/css and ignores these Cache-Control lines, so never rely on
+# them. The rules stay for hosts that do honour them (Netlify, nginx).
 /styles.css
   Cache-Control: public, max-age=600
 

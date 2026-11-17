@@ -273,7 +273,7 @@ no failing audits. Two earlier failures were fixed:
 | Import preview | PASS — shared board shows name, count, layout, `youtube.com, example.com, twitch.tv`; all-evil board rejected |
 | Domain | PASS — apex HTTPS 200, HSTS/CSP/XFO/nosniff; Universal SSL active; `www` 301 to apex; Pages domain active |
 | Custom domain | PASS — Porkbun delegates to Cloudflare; SSL revalidated; apex live, www redirects |
-| Asset cache | PASS — live `app.js?v=101` / `dashboard.js?v=93` / `styles.css?v=87` → `public, max-age=31536000, immutable`; HTML `no-cache` |
+| Asset cache | PASS — live `app.js?v=101` / `dashboard.js?v=94` / `styles.css?v=88` → `public, max-age=31536000, immutable`; HTML `no-cache` |
 | Console | PASS — 0 app errors across Home/Wall/Sources/Suggested/dialogs/sidebar/cinema; only external YouTube CDN failures |
 | Preset fills | PASS — News 4, Always 6, Cartoons 2, Sports 6, Esports 4, Creators 9, Comedy 6, Learning 6; Demo 9→9, 6→6 |
 | Random wall | PASS — API/Home/X produce 4/6/9 tiles, unique URLs, real names; layout matches |

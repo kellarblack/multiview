@@ -14,7 +14,10 @@
 
 ### Notes
 
-- Build `72d35e642a`. Client 59/0/2 (61 checks), bundle 77/77.
+- Build `ab9bf00ff0`. Client 59/0/2 (61 checks), bundle 77/77. Cloudflare
+  Pages ignores `_headers` Cache-Control for js/css (measured: 14400 s asset TTL), so
+  the `?v=` bump is what guarantees fresh files; versions bumped to escape the old
+  year-long entries.
 
 
 ## 1.9.60 — 2026-11-16
