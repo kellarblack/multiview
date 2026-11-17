@@ -9,8 +9,8 @@
 
   const LS_KEY = 'multiview.sports.v1';
   const MAX_TILES = 4;
-  /* Nine verified 24/7 channels. The default demo uses the first four; the layout
-     demo can rebuild the board with one, two or four screens. */
+  /* Verified 24/7 channels, more than a board can show on purpose: the first four
+     fill the demo, the rest are spares for swaps and top-ups. */
   /* Channel /live URLs, not video ids: YouTube resolves whatever stream that channel
      is running right now, so the demo survives a stream ending. */
   const DEMO_POOL = [
@@ -34,23 +34,16 @@
     'https://www.youtube.com/watch?v=jXj9CyjwcWI', /* American Dad 4.5 h */
   ];
 
-  /* Fallback pool uses the most dependable always-on set: news feeds, a city
-     camera, MrBeast long-form and cartoons. */
-  const DEMO_NINE = [
-    'https://www.youtube.com/channel/UCGWTUS6esxeTcmFJN_RwbEQ/live', /* NewsNation */
-    'https://www.youtube.com/channel/UCIALMKvObZNtJ6AmdCLP7Lg/live', /* Bloomberg Television */
-    'https://www.youtube.com/watch?v=6QFVhVT187M', /* ABC News Live */
-    'https://www.youtube.com/watch?v=Lhk3Gu0YeRs', /* LiveNOW from FOX */
-    'https://www.youtube.com/watch?v=q8Puv82CkFw', /* CBS News 24/7 */
-    'https://www.youtube.com/watch?v=ZxCeWQ3Lcig', /* Times Square */
-    'https://www.youtube.com/playlist?list=PLoSWVnSA9vG8SK6-_45PAu6RVTaP1zXHf', /* MrBeast long-form */
-    'https://www.youtube.com/watch?v=nIyaCRNwxhU', /* Gumball */
-    'https://www.youtube.com/watch?v=4In8wOZreGQ', /* Family Guy */
-  ];
-
+  /* The demo pool also seeds swaps and board top-ups, so it can hold more links
+     than a board shows. A board never holds more than MAX_TILES. */
   function demoLinksFor(count) {
     if (Number(count) === 2) return FUNNY_POOL.slice(0, 2).join(' ');
-    return (count === 9 ? DEMO_NINE : DEMO_POOL.slice(0, count)).join(' ');
+    return DEMO_POOL.slice(0, Math.min(Number(count) || 4, MAX_TILES)).join(' ');
+  }
+
+  /* Spare feeds for swapping a dead tile or topping a board up. */
+  function spareLinks() {
+    return DEMO_POOL.join(' ').split(' ').filter(Boolean);
   }
 
   function shuffled(list) {
@@ -964,7 +957,7 @@
             }
             : null,
           };
-        }).filter(Boolean) : [],
+        }).filter(Boolean).slice(0, MAX_TILES) : [],
       }));
       if (!parsed.views.some((v) => v.id === parsed.activeId)) parsed.activeId = parsed.views[0].id;
       return {
@@ -2137,7 +2130,7 @@
   function replaceWithFallback(view, tile) {
     if (!view) return false;
     const have = new Set(view.tiles.map((t) => t.url));
-    const pool = fallbackPoolFor(tile).concat(demoLinksFor(9).split(' '));
+    const pool = fallbackPoolFor(tile).concat(spareLinks());
     /* Prefer a feed the wall does not already show, then any feed that has
        not failed, then a known-good duplicate. A duplicate live feed is
        better than a dead tile. */
@@ -3491,7 +3484,7 @@
          channels. Other boards keep their tiles and just show the first N. */
       if ((view.name === 'Demo' || view.preset) && view.tiles.length < cap) {
         const have = new Set(view.tiles.map((t) => t.url));
-        const fill = demoLinksFor(9).split(' ').filter((u) => !have.has(u)).slice(0, cap - view.tiles.length);
+        const fill = spareLinks().filter((u) => !have.has(u)).slice(0, cap - view.tiles.length);
         if (fill.length) {
           addFromText(fill.join(' '));
           toast(`Filled ${fill.length} more live stream${fill.length === 1 ? '' : 's'} for ${cap}-up.`);

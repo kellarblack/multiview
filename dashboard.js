@@ -1124,13 +1124,11 @@ window.MVDash = (function () {
     '</div>';
   }
 
+  /* Four screens is the cap — thumbnails only ever draw 1, 2 or 4 cells. */
   var LAYOUT_SPEC = {
     '1': { cols: 1, cells: 1 },
     '2': { cols: 2, cells: 2 },
-    '3': { cols: 3, cells: 3 },
     '4': { cols: 2, cells: 4 },
-    '6': { cols: 3, cells: 6 },
-    '9': { cols: 3, cells: 9 },
   };
 
   function boardCard(board) {

@@ -29,7 +29,7 @@ reload always runs the current files. Boards are stored per address: same browse
 and the window wall for framing-hostile sites), your boards, recent streams, the plan and
 source status. A first run seeds a **Demo** board with four **live 24/7 channels** — two
 news, two cartoons — so the wall is never empty; **Load demo** brings it back, and tiles
-delete normally. The **Live demo** bar on Home rebuilds it for 1-up, 2-up, 3-up, 4-up,
+delete normally. The **Live demo** bar on Home rebuilds it for 1-up, 2-up or 4-up.
 2-up or 4-up with live channels. Old demo films are replaced in place on first load.
 
 The Home render is a CSS-3D wall of real sports thumbnails with a slow drift and light
@@ -37,7 +37,7 @@ sweep; it is decorative, not an embedded player. **Ready-made walls** cards each
 2×2 photo mosaic from that board. Opens a curated board in one click: **News desk**,
 **Always on** (Gumball, MrBeast, bodycams, CBS News, Times Square), **Cartoons**, **Sports**
 (NBA, MLB, Premier League, Olympics, UFC, college football), **Esports** (CS2),
-**Creators** (nine creator playlists: MrBeast long-form, MrBeast Gaming compilations,
+**Creators** (four creator playlists: MrBeast long-form, MrBeast Gaming compilations,
 Mark Rober, Dude Perfect, Sidemen, GMM, Conan, Michelle Khare and more), **Comedy** (South
 Park clips) and **Learning** (TED, Kurzgesagt, Veritasium, Numberphile, Vsauce, MKBHD).
 

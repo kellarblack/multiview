@@ -188,4 +188,5 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 181 | Markets panel | DONE | One panel, hairline columns, sorted by chance |
 | 182 | Section rhythm | DONE | 18px heads, 30px gaps |
 | 183 | Repo rename | DONE | Remote, docs and commit email point at kelllar |
+| 184 | Nine-tile leftovers | DONE | Legacy boards trimmed to 4 tiles; DEMO_NINE and 6/9 thumbnails removed |
 

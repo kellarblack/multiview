@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.9.60 — 2026-11-16
+
+### Fixed
+
+- **No more nine-tile traces.** Old boards saved back when 9-up existed carried nine
+  tiles and a `layout: '9'`; the cap normalised the layout but the tiles stayed, so a
+  tab could still read “9”. `loadState` now trims every board to four tiles, and the
+  layout picker, thumbnails and demo buttons are 1/2/4 only — verified with a seeded
+  nine-tile board on a 390 px viewport and on desktop.
+- Removed the dead `DEMO_NINE` pool and the `demoLinksFor(9)` calls; swaps and board
+  top-ups now use `spareLinks()` from the normal pool.
+- `LAYOUT_SPEC` in `dashboard.js` only knows 1, 2 and 4, so no thumbnail can ever draw
+  six or nine cells.
+- SECURITY.md, README.md and server/README.md no longer claim nine tiles.
+
+### Notes
+
+- Build `53c3367418`. Client 59/0/2 (61 checks), bundle 77/77.
+
+
 ## 1.9.59 — 2026-11-16
 
 ### Changed

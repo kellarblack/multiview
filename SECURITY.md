@@ -95,9 +95,9 @@ server on a temporary database.
 | Local storage | Try/catch on read and write; corrupt state falls back to a fresh board; every restored `url`/`embed`/media URL is re-validated through `normalizeLink()` / `safeUrl()` |
 | Self-framing | `multiview.cc`, `multiview-cc.pages.dev` and the current host are rejected as tiles, so the app cannot recurse or inherit its own origin inside `allow-same-origin` + `allow-scripts` |
 | Frame sources | `frame-src` allows `'self' about: https: http:` only — `blob:` was removed |
-| Input caps | Board text 200 KB; individual URL 4 KB; nine tiles per board |
+| Input caps | Board text 200 KB; individual URL 4 KB; four tiles per board |
 | YouTube messages | `infoDelivery` is accepted only when `event.source` is that tile's own iframe |
-| Imported boards | URLs validated for http(s); nine-tile cap; duplicate-safe |
+| Imported boards | URLs validated for http(s); four-tile cap; duplicate-safe |
 | Markup | Parses with no unclosed/mismatched tags or duplicate IDs |
 | Deployment headers | `_headers` + `vercel.json`: CSP, HSTS (`includeSubDomains`), nosniff, `frame-ancestors 'self'`, `X-Permitted-Cross-Domain-Policies: none`, scoped permissions |
 | Service worker | Same-origin GET only, exact shell paths, network-first; no third-party caching |
@@ -150,7 +150,7 @@ sandboxing, import/storage, CSP, service-worker caching and the optional server.
   credentialed URLs and 5 KB URLs. Every user string that reaches `innerHTML` goes through
   `esc()`; no `eval`, `new Function`, `srcdoc` or inline handlers exist.
 - **Residual:** YouTube pre-roll ads can look “short” to the long-form duration heuristic; a
-  9-up wall is still nine decoders; cross-origin players are third-party code inside their
+  4-up wall is still four decoders; cross-origin players are third-party code inside their
   own sandbox. No known exploitable client issue in the tested paths.
 
 ## Residual risks (accepted or out of scope)

@@ -48,7 +48,7 @@ app still works fully; only accounts, cloud boards, share links and billing are 
    ```html
    <link rel="stylesheet" href="styles.css?v=58">
    <script src="sources.js?v=3"></script>
-   <script src="dashboard.js?v=92"></script>
+   <script src="dashboard.js?v=93"></script>
    <script src="app.js?v=87"></script>
    ```
 

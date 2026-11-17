@@ -66,7 +66,7 @@ Board payload — the same shape the app already exports:
   "tiles": [{ "url": "https://…", "muted": true, "cc": false, "force": false }] }
 ```
 
-The server **re-validates everything**: http(s) only, ≤ 9 tiles, known layouts, name
+The server **re-validates everything**: http(s) only, ≤ 4 tiles, known layouts, name
 length. It stores only `url/muted/cc/force` — never `embed`, `kind`, or ids — so a
 stored board can't inject a player URL.
 
