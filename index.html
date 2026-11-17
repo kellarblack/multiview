@@ -37,7 +37,7 @@
 <link rel="dns-prefetch" href="//player.twitch.tv">
 <link rel="preload" as="image" href="media/multiview-demo-poster.jpg?v=6" fetchpriority="high">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="styles.css?v=88">
+<link rel="stylesheet" href="styles.css?v=89">
 </head>
 <body>
 
@@ -102,27 +102,6 @@
         <button class="more-item" id="fullscreenBtn">fullscreen</button>
         <button class="more-item" id="autoHideBtn" aria-pressed="true">auto-hide controls <span class="more-check">✓</span></button>
       </div>
-    </div>
-  </div>
-  <div class="status-wrap">
-    <a class="status-chip" id="statusChip" href="status.html" title="Uptime and feed status" aria-label="Uptime and feed status" aria-expanded="false" aria-controls="statusPop">
-      <span class="dot" data-status-dot aria-hidden="true"></span>
-      <span class="status-bars" data-uptime-bars aria-hidden="true"></span>
-      <span data-status="chip">feeds</span>
-    </a>
-    <div class="status-pop" id="statusPop" role="dialog" aria-label="Uptime" hidden>
-      <div class="status-pop-top">
-        <span>uptime</span>
-        <b data-pop="pct">—</b>
-      </div>
-      <div class="uptime-bars status-pop-bars" data-uptime-bars-pop></div>
-      <p class="status-pop-meta" data-pop="meta">reading history…</p>
-      <dl class="status-pop-rows">
-        <div><dt>pages</dt><dd data-pop="pages">—</dd></div>
-        <div><dt>links</dt><dd data-pop="links">—</dd></div>
-        <div><dt>images</dt><dd data-pop="thumbs">—</dd></div>
-      </dl>
-      <a class="status-pop-link" href="status.html">full status page →</a>
     </div>
   </div>
   <button class="plan-chip" data-act="plan" title="Free during beta — see plans">
@@ -578,8 +557,7 @@
 <main class="view-suggested" id="suggestedView" hidden></main>
 
 <script src="sources.js?v=3"></script>
-<script src="uptime.js?v=1" defer></script>
-<script src="dashboard.js?v=94"></script>
+<script src="dashboard.js?v=95"></script>
 <script src="app.js?v=105"></script>
 </body>
 </html>

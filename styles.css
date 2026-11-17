@@ -2277,7 +2277,6 @@ body.is-tv .tool-group .btn.icon { width: 40px; height: 40px; }
 body.is-tv .layout-opt { width: 40px; height: 36px; }
 body.is-tv .pastebar,
 body.is-tv .plan-chip,
-body.is-tv .status-chip,
 body.is-tv .chrome-reveal,
 body.is-tv .tile-ui { display: none !important; }
 body.is-tv .grid { gap: 0; background: #000; }
@@ -3318,128 +3317,8 @@ body[data-view="wall"] .plan-chip { display: none; }
   box-shadow: 0 0 0 3px rgba(110, 168, 255, .12);
 }
 
-/* Status dropdown under the chip: the same history, no page load. */
-.status-wrap { position: relative; display: inline-flex; }
-.status-pop {
-  position: absolute;
-  top: calc(100% + 9px);
-  right: 0;
-  z-index: 70;
-  width: 266px;
-  padding: 12px 13px 11px;
-  border: .5px solid rgba(255, 255, 255, .12);
-  border-radius: 13px;
-  background: #0b1017;
-  box-shadow: 0 20px 46px rgba(0, 0, 0, .62), 0 2px 8px rgba(0, 0, 0, .5);
-  animation: statusPopIn .14s var(--ease-premium) both;
-}
-@keyframes statusPopIn { from { transform: translateY(-4px); } to { transform: none; } }
-.status-pop[hidden] { display: none; }
-.status-pop-top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 10px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--dim);
-}
-.status-pop-top b {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0;
-  color: #dff5e9;
-  font-variant-numeric: tabular-nums;
-}
-.status-pop-bars { display: flex; align-items: flex-end; gap: 3px; height: 22px; margin-top: 9px; }
-.status-pop-bars .ub { flex: 1 1 0; width: auto; height: 100%; border-radius: 2px; background: rgba(71, 211, 154, .5); }
-.status-pop-bars .ub.is-warn { background: rgba(240, 196, 96, .6); }
-.status-pop-bars .ub.is-down { background: rgba(255, 107, 114, .7); }
-.status-pop-bars .ub.is-empty { height: 100%; background: rgba(255, 255, 255, .05); }
-.status-pop-meta { margin: 8px 0 0; font-size: 11.5px; color: var(--muted-dim); }
-.status-pop-rows { margin: 10px 0 0; padding: 9px 0 0; border-top: .5px solid rgba(255, 255, 255, .07); display: grid; gap: 5px; }
-.status-pop-rows > div { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-.status-pop-rows dt { font-size: 11px; color: var(--dim); }
-.status-pop-rows dd {
-  margin: 0;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 11.5px;
-  color: #dbe3ee;
-  font-variant-numeric: tabular-nums;
-}
-.status-pop-link {
-  display: block;
-  margin-top: 10px;
-  padding-top: 9px;
-  border-top: .5px solid rgba(255, 255, 255, .07);
-  font-size: 11.5px;
-  color: #a9c7f5;
-  text-decoration: none;
-}
-.status-pop-link:hover { color: #fff; }
-@media (max-width: 560px) {
-  .status-pop { width: 244px; right: -6px; }
-}
-
-/* Uptime sparkline inside the status chip. Quiet by default: nine bars,
-   no animation, no glow. Hidden on narrow screens where the text carries it. */
-.status-bars {
-  display: none;
-  align-items: flex-end;
-  gap: 2px;
-  height: 8px;
-  margin-right: 1px;
-}
-.status-bars .ub {
-  display: block;
-  width: 2px;
-  height: 100%;
-  border-radius: 1px;
-  background: rgba(71, 211, 154, .42);
-}
-.status-bars .ub.is-warn { background: rgba(240, 196, 96, .55); }
-.status-bars .ub.is-down { background: rgba(255, 107, 114, .65); }
-.status-bars .ub.is-empty { background: rgba(255, 255, 255, .07); }
-.status-bars .ub:nth-last-child(n + 8) { display: none; }
-@media (min-width: 561px) {
-  .status-chip .status-bars { display: flex; }
-  .status-chip.has-bars .dot { display: none; }
-}
-
-.status-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 26px;
-  padding: 0 10px;
-  border: 1px solid rgba(71, 211, 154, .24);
-  border-radius: 999px;
-  background: rgba(71, 211, 154, .07);
-  color: #c5f4df;
-  font-size: 11px;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: border-color .15s var(--ease), background .15s var(--ease);
-}
-.status-chip:hover { border-color: rgba(71, 211, 154, .5); background: rgba(71, 211, 154, .12); }
-.status-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px rgba(71, 211, 154, .12); }
-.status-chip .dot.is-bad { background: #ff6b72; box-shadow: 0 0 0 3px rgba(255, 107, 114, .14); }
-.home-footer-note .dot { display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--ok); vertical-align: 1px; }
-.home-footer-note .dot.is-bad { background: #ff6b72; }
 .home-footer-note a { color: #a9c7f5; text-decoration: none; }
 .home-footer-note a:hover { color: #fff; text-decoration: underline; }
-@media (max-width: 560px) {
-  .status-chip [data-status] { display: none; }
-  .status-chip { padding: 0 8px; }
-  .status-chip .status-bars { display: flex; }
-  .status-chip .status-bars .ub { width: 2px; }
-  .status-chip .status-bars .ub:nth-last-child(n + 6) { display: none; }
-  .status-chip.has-bars .dot { display: none; }
-}
-
 .home-pricing {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -4368,4 +4247,52 @@ body[data-view="wall"] .plan-chip { display: none; }
 @media (max-width: 560px) {
   .home-scores { margin-top: 28px; }
   .score-card { flex-basis: 156px; }
+}
+
+/* ── phones: the wall itself ───────────────────────────────── */
+/* Video-first mosaic: real gutters and soft corners instead of hairline seams,
+   so four streams on a phone read as four frames, not one striped block. */
+@media (max-width: 900px) {
+  .grid,
+  .grid:has(.tile) { gap: 4px; padding: 4px; background: #05070a; }
+  .tile { border-radius: 10px; }
+  .grid.is-focus,
+  .grid.is-focus:has(.tile) { gap: 0; padding: 0; background: #000; }
+  .grid.is-focus .tile { border-radius: 0; }
+}
+
+/* Portrait: every stream keeps its 16:9 frame and the wall swipes tile by tile. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .grid {
+    grid-auto-rows: 56.25vw;
+    overflow-y: auto;
+    scroll-snap-type: y proximity;
+    overscroll-behavior: contain;
+  }
+  .tile { scroll-snap-align: start; }
+}
+
+/* Landscape phone: compact chrome, the video gets the rest, notch-safe edges. */
+@media (orientation: landscape) and (max-height: 540px) {
+  :root { --topbar-h: 34px; }
+  .topbar { padding: 0 8px; gap: 6px; }
+  .pastebar { padding: 5px 8px; }
+  .paste-field { min-height: 34px; }
+  .grid,
+  .grid:has(.tile) {
+    gap: 2px;
+    padding: 2px max(2px, env(safe-area-inset-right)) 2px max(2px, env(safe-area-inset-left));
+  }
+  .tile { border-radius: 6px; }
+  .grid.is-focus,
+  .grid.is-focus:has(.tile) { padding: 0; }
+  .view-nav button { height: 22px; padding: 0 9px; font-size: 11.5px; }
+  .tabs { max-width: 30vw; }
+  .tv-hint { bottom: 10px; }
+}
+
+/* Portrait phones get the same notch safety on the bars. */
+@media (max-width: 760px) {
+  .topbar { padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
+  .pastebar { padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
 }

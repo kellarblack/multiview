@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.9.62 — 2026-11-17
+
+### Changed
+
+- **Uptime is off Home.** The status chip, its dropdown and the “all feeds up”
+  footer note are gone; Home keeps only a plain `status` link in the footer. The
+  `/status` page is unchanged and still owns the history graph. `uptime.js` is no
+  longer loaded on Home.
+- **The wall on phones.** Portrait now gives each stream a true 16:9 frame
+  (`grid-auto-rows: 56.25vw`) with 4px gutters, rounded tiles and scroll-snap, so
+  four tiles read as four frames instead of a striped block. Landscape phone
+  (≤540px tall) shrinks the top bar to 34px, tightens the paste bar, cuts the gap
+  to 2px and pads for the notch, so the video gets ~74% of the screen instead of
+  the chrome eating a third.
+- Safe-area padding on the bars for both orientations.
+
+### Verified
+
+- Home, wall, sources and discover at 390×760 and 844×330: no horizontal
+  overflow, no console errors, share and plan dialogs inside the viewport.
+
+### Notes
+
+- Build `60e3c04f44`. Client 59/0/2 (61 checks), bundle 77/77.
+
+
 ## 1.9.61 — 2026-11-16
 
 ### Fixed

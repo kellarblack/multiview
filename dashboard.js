@@ -106,96 +106,10 @@ window.MVDash = (function () {
     API.setSources(next);
   }
 
-  /* ── status dropdown ───────────────────────────────────────── */
-
-  var healthData = null;
-  var popRuns = null;
-  var popBound = false;
-
-  function statusPopNodes() {
-    var pop = document.getElementById('statusPop');
-    if (!pop) return null;
-    return {
-      pop: pop,
-      chip: document.getElementById('statusChip'),
-      pct: pop.querySelector('[data-pop="pct"]'),
-      meta: pop.querySelector('[data-pop="meta"]'),
-      bars: pop.querySelector('[data-uptime-bars-pop]'),
-      pages: pop.querySelector('[data-pop="pages"]'),
-      links: pop.querySelector('[data-pop="links"]'),
-      thumbs: pop.querySelector('[data-pop="thumbs"]'),
-    };
-  }
-
-  function paintStatusPop(runs) {
-    var n = statusPopNodes();
-    if (!n) return;
-    var list = runs || popRuns;
-    if (list && n.bars && window.multiviewUptime) {
-      window.multiviewUptime.paint(n.bars, list);
-      var pct = window.multiviewUptime.uptime(list);
-      if (n.pct) n.pct.textContent = pct === null ? '—' : pct + '%';
-      if (n.meta) {
-        n.meta.textContent = list.length
-          ? list.length + (list.length === 1 ? ' check' : ' checks') + ' · ' + (healthData && healthData.generated ? 'latest ' + ago(Date.parse(healthData.generated)) : 'daily')
-          : 'no checks recorded yet';
-      }
-    }
-    var health = healthData;
-    if (health) {
-      if (n.pages) n.pages.textContent = health.pages_checked
-        ? health.pages_ok + '/' + health.pages_checked
-        : 'up';
-      if (n.links) n.links.textContent = health.ok + '/' + health.checked;
-      if (n.thumbs) n.thumbs.textContent = health.thumbs_ok + '/' + health.thumbs_checked;
-    }
-  }
-
-  function closeStatusPop() {
-    var n = statusPopNodes();
-    if (!n || n.pop.hidden) return;
-    n.pop.hidden = true;
-    if (n.chip) n.chip.setAttribute('aria-expanded', 'false');
-  }
-
-  function openStatusPop() {
-    var n = statusPopNodes();
-    if (!n) return;
-    n.pop.hidden = false;
-    if (n.chip) n.chip.setAttribute('aria-expanded', 'true');
-    paintStatusPop();
-    if (!popRuns && window.multiviewUptime) {
-      window.multiviewUptime.load().then(function (runs) {
-        popRuns = runs;
-        paintStatusPop();
-      }).catch(function () { /* keep the numbers we have */ });
-    }
-  }
-
-  function wireStatusPop() {
-    var n = statusPopNodes();
-    if (!n || popBound) return;
-    popBound = true;
-    n.chip.addEventListener('click', function (event) {
-      event.preventDefault();
-      if (n.pop.hidden) openStatusPop();
-      else closeStatusPop();
-    });
-    document.addEventListener('click', function (event) {
-      if (n.pop.hidden) return;
-      if (event.target.closest && event.target.closest('.status-wrap')) return;
-      closeStatusPop();
-    });
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') closeStatusPop();
-    });
-  }
-
   /* ── init ──────────────────────────────────────────────────── */
 
   function init(api) {
     API = api;
-    wireStatusPop();
     var wallsDialog = document.getElementById('wallsDialog');
     if (wallsDialog) {
       wallsDialog.addEventListener('click', function (e) {
@@ -205,40 +119,15 @@ window.MVDash = (function () {
         if (API && API.preset) API.preset(b.dataset.wallKey);
       });
     }
-    /* Green means uptime, not pricing. The top chip and the footer read the
-       same health.json the /status page uses. */
+    /* health.json still dates the preset cards ("checked 2h ago"). The uptime
+       chip is gone from Home: /status is the one place for that. */
     fetch('health.json', { cache: 'no-cache' })
       .then(function (res) { return res.json(); })
       .then(function (h) {
-        healthData = h;
         healthGenerated = h.generated || '';
-        paintStatusPop();
         paintHealthAge();
-        var bad = Number(h.bad) || 0;
-        var chip = bad ? bad + ' down' : 'all up';
-        var foot = bad ? bad + ' feed' + (bad === 1 ? '' : 's') + ' down' : 'all feeds up';
-        document.querySelectorAll('[data-status="chip"],[data-status="foot"]').forEach(function (el) {
-          el.textContent = el.getAttribute('data-status') === 'chip' ? chip : foot;
-        });
-        document.querySelectorAll('[data-status-dot]').forEach(function (el) {
-          el.classList.toggle('is-bad', bad > 0);
-        });
-        var link = document.querySelector('.status-chip');
-        if (link) link.title = h.checked + ' curated feeds checked · ' + h.ok + ' up · ' + bad + ' down';
       })
-      .catch(function () {
-        document.querySelectorAll('[data-status="chip"]').forEach(function (el) { el.textContent = 'status'; });
-      });
-
-    /* The same history the status page draws, squeezed into the chip. */
-    var barsHost = document.querySelector('[data-uptime-bars]');
-    if (barsHost && window.multiviewUptime) {
-      window.multiviewUptime.load().then(function (runs) {
-        window.multiviewUptime.paint(barsHost, runs);
-        var chip = barsHost.parentNode;
-        if (chip && chip.classList) chip.classList.add('has-bars');
-      }).catch(function () { /* the chip still works without history */ });
-    }
+      .catch(function () { /* presets simply show "not checked" */ });
   }
 
   /* A missing channel logo hides itself. This replaces an inline onerror so the
@@ -787,7 +676,7 @@ window.MVDash = (function () {
             '<a class="link-btn" href="legal.html">legal</a>' +
             '<a class="link-btn" href="status.html">status</a>' +
           '</div>' +
-          '<span class="home-footer-note"><span class="dot" data-status-dot></span><span data-status="foot">checking feeds…</span> · <a href="status.html">status</a> · multiview.cc · free right now</span>' +
+          '<span class="home-footer-note"><a href="status.html">status</a> · multiview.cc · free right now</span>' +
         '</footer>' +
       '</div>';
 

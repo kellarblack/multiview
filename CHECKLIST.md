@@ -189,4 +189,6 @@ Status: **DONE** = built and verified · **PARTIAL** = built but not fully verif
 | 182 | Section rhythm | DONE | 18px heads, 30px gaps |
 | 183 | Repo rename | DONE | Remote, docs and commit email point at kelllar |
 | 184 | Nine-tile leftovers | DONE | Legacy boards trimmed to 4 tiles; DEMO_NINE and 6/9 thumbnails removed |
+| 185 | Uptime off Home | DONE | Chip + dropdown + footer note removed; /status keeps the graph |
+| 186 | Phone wall polish | DONE | Portrait 16:9 frames + snap; landscape compact chrome, 2px gaps, notch-safe |
 
